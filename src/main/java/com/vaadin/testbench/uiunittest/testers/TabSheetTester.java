@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2000-2024 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
+package com.vaadin.testbench.uiunittest.testers;
+
+import java.util.Iterator;
+
+import com.vaadin.testbench.uiunittest.Tester;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+
+public class TabSheetTester extends Tester<TabSheet> {
+
+    public TabSheetTester(TabSheet tabSheet) {
+        super(tabSheet);
+    }
+
+    public Tab tab(String caption) {
+        for (int i = 0; i < getComponent().getComponentCount(); i++) {
+            Tab tab = getComponent().getTab(i);
+            if (tab.getCaption().contains(caption)) {
+                return tab;
+            }
+        }
+        return null;
+    }
+
+    public void click(Tab tab) {
+        int index = 0;
+        for (int i = 0; i < getComponent().getComponentCount(); i++) {
+            Tab t = getComponent().getTab(i);
+            if (t.equals(tab)) {
+                index = i;
+                break;
+            }
+        }
+        click(index);
+    }
+
+    public void click(int index) {
+        Iterator<Component> iter = getComponent().iterator();
+        Component comp = null;
+        int i = 0;
+        while (iter.hasNext()) {
+            Component c = iter.next();
+            if (i == index) {
+                comp = c;
+                break;
+            }
+            i++;
+        }
+        getComponent().setSelectedTab(comp, true);
+    }
+
+    public Component current() {
+        return getComponent().getSelectedTab();
+    }
+
+    @Override
+    protected TabSheet getComponent() {
+        return super.getComponent();
+    }
+}
