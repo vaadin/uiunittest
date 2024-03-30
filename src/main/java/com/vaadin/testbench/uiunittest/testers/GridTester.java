@@ -97,6 +97,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         fireSimulatedEvent(event);
         if (getComponent().getSelectionModel() instanceof MultiSelectionModel) {
             if (getComponent().getSelectedItems().contains(i)) {
+                deselect(Set.of(i));
             } else {
                 select(Set.of(i));
             }
@@ -117,7 +118,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            Items to be added into selection.
      */
     public void select(Set<T> items) {
-        assert (!getComponent()
+        assert (getComponent()
                 .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel) : "Grid is not multiselect";
