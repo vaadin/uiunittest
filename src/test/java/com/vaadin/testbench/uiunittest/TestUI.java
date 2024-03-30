@@ -12,9 +12,11 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.MenuBarTestView;
+import com.vaadin.testbench.uiunittest.views.TabSheetTestView;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -34,6 +36,8 @@ public class TestUI extends UI {
         addView(GridTestView.NAME, GridTestView.class);
         addView(MenuBarTestView.NAME, MenuBarTestView.class);
         addView(ComboBoxTestView.NAME, ComboBoxTestView.class);
+        addView(TabSheetTestView.NAME, TabSheetTestView.class);
+        addView(CheckBoxGroupTestView.NAME, CheckBoxGroupTestView.class);
         setContent(content);
         nav.navigateTo("");
     }
