@@ -18,10 +18,10 @@ import org.junit.Test;
 import com.vaadin.server.ServiceException;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
-import com.vaadin.testbench.uiunittest.views.GridTestView;
+import com.vaadin.testbench.uiunittest.views.TreeGridTestView;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TreeGrid;
 
 public class DefaultTest extends UIUnitTest {
 
@@ -41,8 +41,8 @@ public class DefaultTest extends UIUnitTest {
     @Test
     public void defaultTest() {
         assertEquals("Menu", $(Label.class).id("menu").getValue());
-        assertTrue($(Grid.class).first() == null);
-        test($(Button.class).caption(GridTestView.NAME).first()).click();
-        assertTrue($(Grid.class).first() != null);
+        assertTrue($(TreeGrid.class).first() == null);
+        test($(Button.class).caption(TreeGridTestView.NAME).first()).click();
+        assertTrue($(TreeGrid.class).first() != null);
     }
 }

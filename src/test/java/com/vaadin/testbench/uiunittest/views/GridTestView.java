@@ -17,6 +17,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
@@ -81,7 +82,14 @@ public class GridTestView extends TestView {
             grid.setEnabled(false);
         });
 
-        content.addComponents(grid, group, button);
+        Label clicked = new Label("");
+        clicked.setId("clicked");
+
+        grid.addItemClickListener(e -> {
+            clicked.setValue(e.getItem().getValue());
+        });
+
+        content.addComponents(grid, group, button, clicked);
         content.setExpandRatio(grid, 1);
         return content;
     }

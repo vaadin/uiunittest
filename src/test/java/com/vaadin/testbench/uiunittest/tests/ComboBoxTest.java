@@ -46,13 +46,13 @@ public class ComboBoxTest extends UIUnitTest {
 
     @Test
     public void filter() {
-        test($(ComboBox.class).first()).setFilter("Three");
+        test($(ComboBox.class).first()).setInput("Three");
         assertEquals("Three", $(Notification.class).last().getCaption());
     }
 
     @Test
     public void newValue() {
-        test($(ComboBox.class).first()).setFilter("Four");
+        test($(ComboBox.class).first()).setInput("Four");
         assertEquals("Four", $(Notification.class).last().getCaption());
     }
 

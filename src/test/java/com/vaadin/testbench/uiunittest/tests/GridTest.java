@@ -26,6 +26,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.RadioButtonGroup;
 import com.vaadin.ui.TextField;
@@ -54,15 +55,15 @@ public class GridTest extends UIUnitTest {
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
                 .setValue(SelectionMode.MULTI);
-        test(grid).click(0, 0);
+        test(grid).clickToSelect(0);
         assertEquals("Select 0", $(Notification.class).last().getCaption());
-        test(grid).click(0, 1);
+        test(grid).clickToSelect(1);
         assertEquals("Select 0", $(Notification.class).last().getCaption());
         assertEquals(2, grid.getSelectedItems().size());
         assertEquals(set, grid.getSelectedItems());
 
         set = Set.of(view.getData().get(0));
-        test(grid).click(0, 1);
+        test(grid).clickToSelect(1);
         assertEquals(set, grid.getSelectedItems());
     }
 
@@ -126,5 +127,17 @@ public class GridTest extends UIUnitTest {
             err++;
         }
         assertEquals(1, err);
+    }
+
+    @Test
+    public void itemClick() {
+        Grid<Bean> grid = $(Grid.class).single();
+
+        assertEquals("", $(Label.class).id("clicked").getValue());
+
+        for (int i = 0; i < 10; i++) {
+            test(grid).click(0, i);
+            assertEquals("Value " + i, $(Label.class).id("clicked").getValue());
+        }
     }
 }

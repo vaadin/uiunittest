@@ -25,6 +25,7 @@ import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.MenuBarTestView;
 import com.vaadin.testbench.uiunittest.views.TabSheetTestView;
+import com.vaadin.testbench.uiunittest.views.TreeGridTestView;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -46,6 +47,7 @@ public class TestUI extends UI {
         addView(ComboBoxTestView.NAME, ComboBoxTestView.class);
         addView(TabSheetTestView.NAME, TabSheetTestView.class);
         addView(CheckBoxGroupTestView.NAME, CheckBoxGroupTestView.class);
+        addView(TreeGridTestView.NAME, TreeGridTestView.class);
         setContent(content);
         nav.navigateTo("");
     }

@@ -23,6 +23,7 @@ import com.vaadin.testbench.uiunittest.testers.ComboBoxTester;
 import com.vaadin.testbench.uiunittest.testers.GridTester;
 import com.vaadin.testbench.uiunittest.testers.MenuBarTester;
 import com.vaadin.testbench.uiunittest.testers.TabSheetTester;
+import com.vaadin.testbench.uiunittest.testers.TreeGridTester;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.pro.licensechecker.LicenseChecker;
@@ -41,6 +42,7 @@ import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
@@ -221,6 +223,18 @@ public abstract class AbstractUIUnitTest {
      *            The component
      * @return Tester for operations
      */
+    public <T> TreeGridTester<T> test(TreeGrid<T> component) {
+        return new TreeGridTester<>(component);
+    }
+
+    /**
+     * Perform operations with the component as a user. E.g. if the operation
+     * fires an event as an side effect, it has isUserOriginated = true.
+     *
+     * @param component
+     *            The component
+     * @return Tester for operations
+     */
     public <T> AbstractFieldTester<T> test(AbstractField<T> component) {
         return new AbstractFieldTester<>(component);
     }
@@ -332,8 +346,10 @@ public abstract class AbstractUIUnitTest {
          * @return Component instance, can be null
          */
         public T id(String id) {
+            assert (!isEmpty()) : "No class matches";
             Optional<T> res = stream()
-                    .filter(c -> ((Component) c).getId().equals(id))
+                    .filter(c -> ((Component) c).getId() == null ? false
+                            : ((Component) c).getId().equals(id))
                     .findFirst();
             if (res.isPresent()) {
                 return res.get();
@@ -350,8 +366,11 @@ public abstract class AbstractUIUnitTest {
          * @return Result set of components
          */
         public QueryResult<T> styleName(String styleName) {
-            return new QueryResult<>(stream().filter(
-                    c -> ((Component) c).getStyleName().contains(styleName))
+            assert (!isEmpty()) : "No class matches";
+            return new QueryResult<>(stream()
+                    .filter(c -> ((Component) c).getStyleName() == null ? false
+                            : ((Component) c).getStyleName()
+                                    .contains(styleName))
                     .collect(Collectors.toList()));
         }
 
@@ -364,8 +383,10 @@ public abstract class AbstractUIUnitTest {
          * @return Result set of components
          */
         public QueryResult<T> caption(String caption) {
+            assert (!isEmpty()) : "No class matches";
             return new QueryResult<>(stream()
-                    .filter(c -> ((Component) c).getCaption().contains(caption))
+                    .filter(c -> ((Component) c).getCaption() == null ? false
+                            : ((Component) c).getCaption().contains(caption))
                     .collect(Collectors.toList()));
         }
 

@@ -76,7 +76,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
 
     /**
      * Simulate click in given cell. Will trigger ItemClick event as a user. If
-     * selection mode is Single or Multi, selection is updated accordingly.
+     * selection mode is Single, selection is updated accordingly.
      *
      * @param column
      *            Column index
@@ -89,35 +89,54 @@ public class GridTester<T> extends Tester<Grid<T>> {
         assert (column > -1 && column < getComponent().getColumns()
                 .size()) : "Column out of bounds";
         assert (row > -1 && row < size()) : "Row out of bounds";
-        T i = item(row);
+        T item = item(row);
         MouseEventDetails details = new MouseEventDetails();
         details.setButton(MouseButton.LEFT);
         Grid.ItemClick<T> event = new Grid.ItemClick<T>(getComponent(),
-                getComponent().getColumns().get(column), i, details, row);
+                getComponent().getColumns().get(column), item, details, row);
         fireSimulatedEvent(event);
-        if (getComponent().getSelectionModel() instanceof MultiSelectionModel) {
-            if (getComponent().getSelectedItems().contains(i)) {
-                deselect(Set.of(i));
-            } else {
-                select(Set.of(i));
-            }
-        } else if (getComponent()
+        if (getComponent()
                 .getSelectionModel() instanceof SingleSelectionModel) {
-            if (getComponent().getSelectedItems().contains(i)) {
-                deselect(i);
+            if (getComponent().getSelectedItems().contains(item)) {
+                deselect(item);
             } else {
-                select(i);
+                select(item);
             }
         }
     }
 
     /**
-     * Select items as a user. Grid needs to be multiselect.
-     *
-     * @param items
-     *            Items to be added into selection.
+     * Simulate clicking of the multiselect checkbox column of the Grid as a
+     * user on a given item.
+     * 
+     * @param row
+     *            The row index
      */
-    public void select(Set<T> items) {
+    public void clickToSelect(int row) {
+        assert ((getComponent()
+                .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
+        T item = item(row);
+        clickToSelect(item);
+    }
+
+    /**
+     * Simulate clicking of the multiselect checkbox column of the Grid as a
+     * user on a given item.
+     *
+     * @param item
+     *            Item
+     */
+    public void clickToSelect(T item) {
+        assert ((getComponent()
+                .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
+        if (getComponent().getSelectedItems().contains(item)) {
+            deselect(Set.of(item));
+        } else {
+            select(Set.of(item));
+        }
+    }
+
+    private void select(Set<T> items) {
         assert (getComponent()
                 .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
@@ -131,13 +150,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         updateSelection(copy, removed);
     }
 
-    /**
-     * De-select items as a user. Grid needs to be multiselect.
-     *
-     * @param items
-     *            Items to be removed from the selection.
-     */
-    public void deselect(Set<T> items) {
+    private void deselect(Set<T> items) {
         assert (getComponent()
                 .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
@@ -167,13 +180,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         }
     }
 
-    /**
-     * Select given item. Grid needs to be singleselect.
-     *
-     * @param item
-     *            Item to select, null to deselect existing.
-     */
-    public void select(T item) {
+    private void select(T item) {
         assert (getComponent()
                 .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
@@ -195,13 +202,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         }
     }
 
-    /**
-     * De-select the item. Grid needs to be singleselect.
-     *
-     * @param item
-     *            Item to de-select.
-     */
-    public void deselect(T item) {
+    private void deselect(T item) {
         item = null;
         select(item);
     }
