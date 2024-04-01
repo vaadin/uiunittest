@@ -72,9 +72,11 @@ public class MenuBarTester extends Tester<MenuBar> {
      * @param item
      */
     public void click(MenuItem item) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible MenuBar";
         assert (item
                 .getMenuBar() == getComponent()) : "Can't click foreign item";
-        assert (item.isEnabled()) : "MenuItem is disabled";
+        assert (item.isEnabled()
+                && item.isVisible()) : "MenuItem is disabled or invisible";
         assert (item
                 .getCommand() != null) : "The MenuItem has no Command associated with it";
         item.getCommand().menuSelected(item);

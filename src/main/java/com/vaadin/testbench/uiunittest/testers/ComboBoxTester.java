@@ -25,11 +25,11 @@ public class ComboBoxTester<T> extends AbstractSingleSelectTester<T> {
      * disabled. If only one item matches filter, it is selected. If no items
      * match and newItemProvider is present, it will be called with given value.
      *
-     * @param value
+     * @param value String value
      */
     public void setInput(String value) {
         ComboBox<T> comboBox = getComponent();
-        assert (comboBox.isEnabled()) : "ComboBox is not enabled";
+        assert (isInteractable()) : "ComboBox is not enabled";
         assert (comboBox
                 .isTextInputAllowed()) : "ComboBox has filter field disabled";
         Class<?> clazz = getComponent().getClass();

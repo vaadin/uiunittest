@@ -19,10 +19,11 @@ public class ButtonTester extends Tester<Button> {
     }
 
     /**
-     * Assert that Button is enabled and produce simulated ClickEvent if it is.
+     * Assert that Button is enabled and visible and produce simulated
+     * ClickEvent if it is.
      */
     public void click() {
-        assert (getComponent().isEnabled()) : "Button is not enabled";
+        assert (isInteractable()) : "Button is not enabled or visible";
         getComponent().click();
     }
 }

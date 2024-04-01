@@ -13,14 +13,46 @@ import java.lang.reflect.Method;
 import java.util.EventObject;
 
 import com.vaadin.server.AbstractClientConnector;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.AbstractComponent;
 
-public abstract class Tester<T extends Component> {
+public abstract class Tester<T extends AbstractComponent> {
 
     private T component;
 
     public Tester(T component) {
         this.component = component;
+    }
+
+    /**
+     * Checks if the component is interactable by user, i.e. it is enabled and
+     * it is visible.
+     * 
+     * @return boolean value
+     */
+    public boolean isInteractable() {
+        return getComponent().isEnabled() && getComponent().isVisible();
+    }
+
+    /**
+     * Checks if the component has an error, typically this can mean with a
+     * field component that Binder has validation error and has set component
+     * invalid.
+     * 
+     * @return boolean value.
+     */
+    public boolean isInvalid() {
+        return getComponent().getComponentError() != null;
+    }
+
+    /**
+     * Returns the component error message if there is one. Otherwise null.
+     * 
+     * @return String value.
+     */
+    public String errorMessage() {
+        return isInvalid()
+                ? getComponent().getComponentError().getFormattedHtmlMessage()
+                : null;
     }
 
     /**

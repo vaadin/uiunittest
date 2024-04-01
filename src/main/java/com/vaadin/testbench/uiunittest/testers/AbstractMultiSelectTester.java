@@ -32,8 +32,7 @@ public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
 
     @Override
     public void setValue(Set<T> value) {
-        assert (!field.isReadOnly() && field
-                .isEnabled()) : "Can't set value to readOnly or disabled field";
+        assert (isInteractable()) : "Can't set value to readOnly or disabled field";
         Set<T> copy = value.stream().map(Objects::requireNonNull)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         Class<?> clazz = field.getClass();
@@ -51,5 +50,16 @@ public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
                 | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Checks if the component is interactable by user, i.e. it is enabled and
+     * it is visible and not in readonly state.
+     * 
+     * @return boolean value
+     */
+    @Override
+    public boolean isInteractable() {
+        return super.isInteractable() && !getComponent().isReadOnly();
     }
 }

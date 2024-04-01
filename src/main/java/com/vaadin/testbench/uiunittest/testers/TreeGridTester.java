@@ -28,7 +28,7 @@ public class TreeGridTester<T> extends GridTester<T> {
      *            The item
      */
     public void clickToggle(T item) {
-        assert (getComponent().isEnabled()) : "TreeGrid is in disabled state";
+        assert (isInteractable()) : "Can't interact with disabled or invisible TreeGrid";
         if (getComponent().isExpanded(item)) {
             assert (isCollapseAllowed(item)) : "TreeGrid Collapse not allowed";
             collapse(item);

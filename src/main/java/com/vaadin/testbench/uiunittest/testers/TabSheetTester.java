@@ -32,7 +32,17 @@ public class TabSheetTester extends Tester<TabSheet> {
         return null;
     }
 
+    /**
+     * Simulate user clicking a Tab, the SelectedTabC.hangeEvent fired will have
+     * isUserOriginated = true
+     * 
+     * @param tab
+     *            The Tab
+     */
     public void click(Tab tab) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible TabSheet";
+        assert (tab.isEnabled() && tab
+                .isVisible()) : "Can't interact with disabled or invisible Tab";
         int index = 0;
         for (int i = 0; i < getComponent().getComponentCount(); i++) {
             Tab t = getComponent().getTab(i);
@@ -44,6 +54,13 @@ public class TabSheetTester extends Tester<TabSheet> {
         click(index);
     }
 
+    /**
+     * Simulate user clicking a Tab by its index, the SelectedTabC.hangeEvent
+     * fired will have isUserOriginated = true
+     * 
+     * @param tab
+     *            The Tab index
+     */
     public void click(int index) {
         Iterator<Component> iter = getComponent().iterator();
         Component comp = null;
@@ -59,6 +76,11 @@ public class TabSheetTester extends Tester<TabSheet> {
         getComponent().setSelectedTab(comp, true);
     }
 
+    /**
+     * Return the currently visible content of the TabSheet.
+     *
+     * @return A component.
+     */
     public Component current() {
         return getComponent().getSelectedTab();
     }

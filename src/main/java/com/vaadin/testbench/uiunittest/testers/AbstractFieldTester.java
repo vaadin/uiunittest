@@ -25,8 +25,7 @@ public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
 
     @Override
     public void setValue(T value) {
-        assert (!getComponent().isReadOnly() && getComponent()
-                .isEnabled()) : "Can't set value to readOnly or disabled field";
+        assert (isInteractable()) : "Can't set value to readOnly or disabled field";
         Class<?> clazz = getComponent().getClass();
         while (!clazz.equals(AbstractField.class)) {
             clazz = clazz.getSuperclass();
@@ -41,6 +40,17 @@ public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
                 | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Checks if the component is interactable by user, i.e. it is enabled and
+     * it is visible and not in readonly state.
+     * 
+     * @return boolean value
+     */
+    @Override
+    public boolean isInteractable() {
+        return super.isInteractable() && !getComponent().isReadOnly();
     }
 
     @Override

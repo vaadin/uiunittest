@@ -84,8 +84,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            Row index
      */
     public void click(int column, int row) {
-        assert (getComponent()
-                .isEnabled()) : "Can't interact with disabled Grid";
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         assert (column > -1 && column < getComponent().getColumns()
                 .size()) : "Column out of bounds";
         assert (row > -1 && row < size()) : "Row out of bounds";
@@ -113,6 +112,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            The row index
      */
     public void clickToSelect(int row) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         assert ((getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
         T item = item(row);
@@ -127,6 +127,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            Item
      */
     public void clickToSelect(T item) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         assert ((getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
         if (getComponent().getSelectedItems().contains(item)) {
@@ -137,8 +138,6 @@ public class GridTester<T> extends Tester<Grid<T>> {
     }
 
     private void select(Set<T> items) {
-        assert (getComponent()
-                .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel) : "Grid is not multiselect";
         assert (items != null) : "Items can't be null";
@@ -151,8 +150,6 @@ public class GridTester<T> extends Tester<Grid<T>> {
     }
 
     private void deselect(Set<T> items) {
-        assert (getComponent()
-                .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel) : "Grid is not multiselect";
         assert (items != null) : "Items can't be null";
