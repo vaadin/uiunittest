@@ -20,6 +20,7 @@ import com.vaadin.testbench.uiunittest.Tester;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
@@ -49,6 +50,12 @@ public class GridTester<T> extends Tester<Grid<T>> {
         T cat = (T) item(row);
         ValueProvider<T, ?> vp = getComponent().getColumns().get(column)
                 .getValueProvider();
+        Object content = vp.apply(cat);
+        if (content instanceof AbstractComponent) {
+            AbstractComponent component = ((AbstractComponent) content);
+            component.setParent(getComponent());
+            component.attach();
+        }
         return vp.apply(cat);
     }
 

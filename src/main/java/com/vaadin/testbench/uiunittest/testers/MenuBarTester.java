@@ -79,6 +79,7 @@ public class MenuBarTester extends Tester<MenuBar> {
                 && item.isVisible()) : "MenuItem is disabled or invisible";
         assert (item
                 .getCommand() != null) : "The MenuItem has no Command associated with it";
+        focus();
         item.getCommand().menuSelected(item);
     }
 }

@@ -8,12 +8,20 @@
  */
 package com.vaadin.testbench.uiunittest;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Component.Focusable;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 
 public abstract class Tester<T extends AbstractComponent> {
 
@@ -63,6 +71,11 @@ public abstract class Tester<T extends AbstractComponent> {
      */
     protected void fireSimulatedEvent(EventObject event) {
         Class<?> clazz = component.getClass();
+        fireSimulatedEvent(component, event);
+    }
+
+    private void fireSimulatedEvent(Component component, EventObject event) {
+        Class<?> clazz = component.getClass();
         while (!clazz.equals(AbstractClientConnector.class)) {
             clazz = clazz.getSuperclass();
         }
@@ -75,6 +88,35 @@ public abstract class Tester<T extends AbstractComponent> {
                 | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Attempt to focus the component as a user. If the component is not
+     * Focusable this does nothing. If the UI had a previous component focused,
+     * it will be blurred.
+     */
+    public void focus() {
+        if (getComponent() instanceof Focusable) {
+            UI ui = UI.getCurrent(); // getComponent().getUI();
+            Focusable focused = null;
+            Class<?> clazz = ui.getClass();
+            while (!clazz.equals(UI.class)) {
+                clazz = clazz.getSuperclass();
+            }
+            try {
+                Field field = clazz.getDeclaredField("pendingFocus");
+                field.setAccessible(true);
+                focused = (Focusable) field.get(ui);
+            } catch (NoSuchFieldException | SecurityException
+                    | IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if (focused != null) {
+                fireSimulatedEvent(focused, new BlurEvent(focused));
+            }
+            ((Focusable) getComponent()).focus();
+            fireSimulatedEvent(new FocusEvent(getComponent()));
         }
     }
 

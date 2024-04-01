@@ -24,6 +24,10 @@ public class ButtonTester extends Tester<Button> {
      */
     public void click() {
         assert (isInteractable()) : "Button is not enabled or visible";
+        focus();
         getComponent().click();
+        if (getComponent().isDisableOnClick()) {
+            getComponent().setEnabled(false);
+        }
     }
 }

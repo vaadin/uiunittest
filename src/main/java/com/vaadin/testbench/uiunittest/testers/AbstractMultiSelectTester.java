@@ -19,6 +19,7 @@ import com.vaadin.testbench.uiunittest.HasValue;
 import com.vaadin.testbench.uiunittest.Tester;
 
 import com.vaadin.ui.AbstractMultiSelect;
+import com.vaadin.ui.Component.Focusable;
 
 public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
         implements HasValue<Set<T>> {
@@ -33,6 +34,9 @@ public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
     @Override
     public void setValue(Set<T> value) {
         assert (isInteractable()) : "Can't set value to readOnly or disabled field";
+        if (getComponent() instanceof Focusable) {
+            focus();
+        }
         Set<T> copy = value.stream().map(Objects::requireNonNull)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         Class<?> clazz = field.getClass();

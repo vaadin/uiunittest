@@ -15,6 +15,7 @@ import com.vaadin.testbench.uiunittest.HasValue;
 import com.vaadin.testbench.uiunittest.Tester;
 
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Component.Focusable;
 
 public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
         implements HasValue<T> {
@@ -26,6 +27,9 @@ public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
     @Override
     public void setValue(T value) {
         assert (isInteractable()) : "Can't set value to readOnly or disabled field";
+        if (getComponent() instanceof Focusable) {
+            focus();
+        }
         Class<?> clazz = getComponent().getClass();
         while (!clazz.equals(AbstractField.class)) {
             clazz = clazz.getSuperclass();

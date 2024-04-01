@@ -22,6 +22,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
+import com.vaadin.testbench.uiunittest.views.FocusTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.MenuBarTestView;
 import com.vaadin.testbench.uiunittest.views.TabSheetTestView;
@@ -48,6 +49,7 @@ public class TestUI extends UI {
         addView(TabSheetTestView.NAME, TabSheetTestView.class);
         addView(CheckBoxGroupTestView.NAME, CheckBoxGroupTestView.class);
         addView(TreeGridTestView.NAME, TreeGridTestView.class);
+        addView(FocusTestView.NAME, FocusTestView.class);
         setContent(content);
         nav.navigateTo("");
     }
