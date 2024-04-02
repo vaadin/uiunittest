@@ -10,7 +10,6 @@ package com.vaadin.testbench.uiunittest.testers;
 
 import java.util.List;
 
-import com.vaadin.testbench.uiunittest.Tester;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 

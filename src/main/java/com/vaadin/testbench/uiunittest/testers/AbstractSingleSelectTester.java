@@ -11,9 +11,6 @@ package com.vaadin.testbench.uiunittest.testers;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.vaadin.testbench.uiunittest.HasValue;
-import com.vaadin.testbench.uiunittest.Tester;
-
 import com.vaadin.ui.AbstractSingleSelect;
 import com.vaadin.ui.Component.Focusable;
 

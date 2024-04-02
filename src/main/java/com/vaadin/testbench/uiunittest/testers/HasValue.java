@@ -6,7 +6,7 @@
  * See <https://vaadin.com/commercial-license-and-service-terms> for the full
  * license.
  */
-package com.vaadin.testbench.uiunittest;
+package com.vaadin.testbench.uiunittest.testers;
 
 public interface HasValue<T> {
 

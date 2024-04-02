@@ -8,8 +8,6 @@
  */
 package com.vaadin.testbench.uiunittest.testers;
 
-import com.vaadin.testbench.uiunittest.Tester;
-
 import com.vaadin.ui.Button;
 
 public class ButtonTester extends Tester<Button> {

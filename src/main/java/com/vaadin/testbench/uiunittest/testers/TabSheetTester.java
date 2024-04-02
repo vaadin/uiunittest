@@ -10,8 +10,6 @@ package com.vaadin.testbench.uiunittest.testers;
 
 import java.util.Iterator;
 
-import com.vaadin.testbench.uiunittest.Tester;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;

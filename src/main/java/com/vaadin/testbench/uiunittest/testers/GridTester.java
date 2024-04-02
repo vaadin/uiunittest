@@ -15,8 +15,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.vaadin.testbench.uiunittest.Tester;
-
 import com.vaadin.data.ValueProvider;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
