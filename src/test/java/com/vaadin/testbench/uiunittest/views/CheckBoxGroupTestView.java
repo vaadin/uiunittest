@@ -29,6 +29,7 @@ public class CheckBoxGroupTestView extends TestView {
     public Component getComponent() {
         CheckBoxGroup<String> group = new CheckBoxGroup<>("Select");
         List<String> items = Arrays.asList("One", "Two", "Three");
+        group.setItems(items);
 
         group.addValueChangeListener(e -> {
             if (e.isUserOriginated()) {

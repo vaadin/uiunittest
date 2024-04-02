@@ -21,17 +21,15 @@ import com.vaadin.ui.Component.Focusable;
 public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
         implements HasValue<Set<T>> {
 
-    private AbstractMultiSelect<T> field;
-
     public AbstractMultiSelectTester(AbstractMultiSelect<T> field) {
         super(field);
-        this.field = field;
     }
 
     @Override
     public void setValue(Set<T> value) {
         assert (isInteractable()) : "Can't set value to readOnly or disabled field";
-        if (getComponent() instanceof Focusable) {
+        AbstractMultiSelect<T> field = getComponent();
+        if (field instanceof Focusable) {
             focus();
         }
         Set<T> copy = value.stream().map(Objects::requireNonNull)

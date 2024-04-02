@@ -25,7 +25,8 @@ public class ComboBoxTester<T> extends AbstractSingleSelectTester<T> {
      * disabled. If only one item matches filter, it is selected. If no items
      * match and newItemProvider is present, it will be called with given value.
      *
-     * @param value String value
+     * @param value
+     *            String value
      */
     public void setInput(String value) {
         ComboBox<T> comboBox = getComponent();
