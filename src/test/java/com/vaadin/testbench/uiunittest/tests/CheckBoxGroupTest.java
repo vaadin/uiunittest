@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.vaadin.server.ServiceException;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
+import com.vaadin.testbench.uiunittest.Utils;
 import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.ui.Notification;
@@ -44,7 +45,7 @@ public class CheckBoxGroupTest extends UIUnitTest {
 
     @Test
     public void basic() {
-        Set<String> value = Set.of("One", "Three");
+        Set<String> value = Utils.setOfItems("One", "Three");
         test($(CheckBoxGroup.class).first()).setValue(value);
         String message = $(Notification.class).last().getCaption();
         assertTrue(message.contains("One"));

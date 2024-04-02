@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.vaadin.server.ServiceException;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
+import com.vaadin.testbench.uiunittest.Utils;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView.Bean;
 import com.vaadin.ui.Button;
@@ -50,7 +51,8 @@ public class GridTest extends UIUnitTest {
 
     @Test
     public void multiSelection() {
-        Set<Bean> set = Set.of(view.getData().get(0), view.getData().get(1));
+        Set<Bean> set = Utils.setOfItems(view.getData().get(0),
+                view.getData().get(1));
 
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
@@ -62,14 +64,14 @@ public class GridTest extends UIUnitTest {
         assertEquals(2, grid.getSelectedItems().size());
         assertEquals(set, grid.getSelectedItems());
 
-        set = Set.of(view.getData().get(0));
+        set = Utils.setOfItems(view.getData().get(0));
         test(grid).clickToSelect(1);
         assertEquals(set, grid.getSelectedItems());
     }
 
     @Test
     public void singleSelection() {
-        Set<Bean> set = Set.of(view.getData().get(1));
+        Set<Bean> set = Utils.setOfItems(view.getData().get(1));
 
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
