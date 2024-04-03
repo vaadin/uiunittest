@@ -45,11 +45,16 @@ public class CheckBoxGroupTest extends UIUnitTest {
 
     @Test
     public void basic() {
-        Set<String> value = Utils.setOfItems("One", "Three");
-        test($(CheckBoxGroup.class).first()).setValue(value);
+        test($(CheckBoxGroup.class).first()).clickItem("One");
         String message = $(Notification.class).last().getCaption();
         assertTrue(message.contains("One"));
+        test($(CheckBoxGroup.class).first()).clickItem("Three");
+        message = $(Notification.class).last().getCaption();
         assertTrue(message.contains("Three"));
-        assertFalse(message.contains("Two"));
+        assertTrue(message.contains("One"));
+        test($(CheckBoxGroup.class).first()).clickItem("Three");
+        message = $(Notification.class).last().getCaption();
+        assertFalse(message.contains("Three"));
+        assertTrue(message.contains("One"));
     }
 }

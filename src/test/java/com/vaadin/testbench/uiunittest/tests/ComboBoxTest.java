@@ -40,7 +40,7 @@ public class ComboBoxTest extends UIUnitTest {
 
     @Test
     public void basic() {
-        test($(ComboBox.class).first()).setValue("Two");
+        test($(ComboBox.class).first()).clickItem("Two");
         assertEquals("Two", $(Notification.class).last().getCaption());
     }
 

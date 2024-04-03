@@ -25,6 +25,25 @@ public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
         super(field);
     }
 
+    /**
+     * Simulate clicking item in multiselect component to toggle its selection.
+     *
+     * @param item
+     *            Item to click
+     */
+    public void clickItem(T item) {
+        Set<T> value = getComponent().getValue().stream()
+                .map(Objects::requireNonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        if (value.contains(item)) {
+            value.remove(item);
+            setValue(value);
+        } else {
+            value.add(item);
+            setValue(value);
+        }
+    }
+
     @Override
     public void setValue(Set<T> value) {
         assert (isInteractable()) : "Can't set value to readOnly or disabled field";

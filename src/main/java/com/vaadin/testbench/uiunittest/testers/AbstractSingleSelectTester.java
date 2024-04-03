@@ -21,6 +21,16 @@ public class AbstractSingleSelectTester<T>
         super(field);
     }
 
+    /**
+     * Simulate clicking item in single select component to get it selected.
+     *
+     * @param item
+     *            Item to click
+     */
+    public void clickItem(T item) {
+        setValue(item);
+    }
+
     @Override
     public void setValue(T value) {
         assert (isInteractable()) : "Can't set value to readOnly or disabled field";
