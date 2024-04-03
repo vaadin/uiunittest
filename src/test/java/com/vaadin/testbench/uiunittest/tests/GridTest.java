@@ -56,7 +56,7 @@ public class GridTest extends UIUnitTest {
 
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
-                .setValue(SelectionMode.MULTI);
+                .clickItem(SelectionMode.MULTI);
         test(grid).clickToSelect(0);
         assertEquals("Select 0", $(Notification.class).last().getCaption());
         test(grid).clickToSelect(1);
@@ -75,7 +75,7 @@ public class GridTest extends UIUnitTest {
 
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
-                .setValue(SelectionMode.SINGLE);
+                .clickItem(SelectionMode.SINGLE);
         test(grid).click(0, 0);
         assertEquals("Select 0", $(Notification.class).last().getCaption());
         test(grid).click(0, 1);
@@ -108,8 +108,6 @@ public class GridTest extends UIUnitTest {
     @Test
     public void gridValues() {
         Grid<Bean> grid = $(Grid.class).single();
-        test($(RadioButtonGroup.class).caption("Mode").first())
-                .setValue(SelectionMode.SINGLE);
         for (int i = 0; i < 10; i++) {
             assertEquals(i, test(grid).cell(0, i));
         }
@@ -119,7 +117,7 @@ public class GridTest extends UIUnitTest {
     public void gridDisabled() {
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
-                .setValue(SelectionMode.SINGLE);
+                .clickItem(SelectionMode.SINGLE);
 
         test($(Button.class).caption("Disable").first()).click();
         int err = 0;
