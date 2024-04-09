@@ -91,7 +91,7 @@ public class GridTest extends UIUnitTest {
     public void gridComponents() {
         Grid<Bean> grid = $(Grid.class).single();
         test($(RadioButtonGroup.class).caption("Mode").first())
-                .setValue(SelectionMode.SINGLE);
+                .clickItem(SelectionMode.SINGLE);
 
         for (int i = 0; i < 10; i++) {
             HorizontalLayout layout = (HorizontalLayout) test(grid).cell(1, i);

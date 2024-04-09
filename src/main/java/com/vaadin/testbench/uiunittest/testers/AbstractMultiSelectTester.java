@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.AbstractMultiSelect;
 import com.vaadin.ui.Component.Focusable;
 
-public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
-        implements HasValue<Set<T>> {
+public class AbstractMultiSelectTester<T>
+        extends Tester<AbstractMultiSelect<T>> {
 
     public AbstractMultiSelectTester(AbstractMultiSelect<T> field) {
         super(field);
@@ -44,8 +44,7 @@ public class AbstractMultiSelectTester<T> extends Tester<AbstractMultiSelect<T>>
         }
     }
 
-    @Override
-    public void setValue(Set<T> value) {
+    protected void setValue(Set<T> value) {
         assert (isInteractable()) : "Can't set value to readOnly or disabled field";
         AbstractMultiSelect<T> field = getComponent();
         if (field instanceof Focusable) {

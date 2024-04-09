@@ -13,6 +13,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EventObject;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.server.AbstractClientConnector;
@@ -38,7 +41,24 @@ public abstract class Tester<T extends AbstractComponent> {
      * @return boolean value
      */
     public boolean isInteractable() {
-        return getComponent().isEnabled() && getComponent().isVisible();
+        return isEnabled() && getComponent().isVisible();
+    }
+
+    // Component#isEnabled() returns components immediate enabled state
+    // However if component is in disabled container, it will be disabled also
+    // in the Browser DOM. Hence need to check parents.
+    private boolean isEnabled() {
+        Component component = getComponent();
+        if (!component.isEnabled()) {
+            return false;
+        }
+        while (component.getParent() != null) {
+            component = component.getParent();
+            if (!component.isEnabled()) {
+                return false;
+            }
+        }
+        return component.isEnabled();
     }
 
     /**
@@ -58,9 +78,14 @@ public abstract class Tester<T extends AbstractComponent> {
      * @return String value.
      */
     public String errorMessage() {
-        return isInvalid()
-                ? getComponent().getComponentError().getFormattedHtmlMessage()
-                : null;
+        if (getComponent().getComponentError() == null || getComponent()
+                .getComponentError().getFormattedHtmlMessage() == null) {
+            return null;
+        }
+        Document doc = Jsoup.parse(
+                getComponent().getComponentError().getFormattedHtmlMessage());
+        doc.outputSettings().prettyPrint(false);
+        return isInvalid() ? doc.text().toString() : null;
     }
 
     /**
@@ -70,7 +95,6 @@ public abstract class Tester<T extends AbstractComponent> {
      *            The event to be fired
      */
     protected void fireSimulatedEvent(EventObject event) {
-        Class<?> clazz = component.getClass();
         fireSimulatedEvent(component, event);
     }
 

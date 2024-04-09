@@ -8,6 +8,9 @@
  */
 package com.vaadin.testbench.uiunittest;
 
+import java.io.Serializable;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAdjuster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,6 +18,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.vaadin.testbench.uiunittest.testers.AbstractDateFieldTester;
 import com.vaadin.testbench.uiunittest.testers.AbstractFieldTester;
 import com.vaadin.testbench.uiunittest.testers.AbstractMultiSelectTester;
 import com.vaadin.testbench.uiunittest.testers.AbstractSingleSelectTester;
@@ -31,6 +35,7 @@ import com.vaadin.server.ClientConnector;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractDateField;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractMultiSelect;
 import com.vaadin.ui.AbstractSingleSelect;
@@ -189,6 +194,19 @@ public abstract class AbstractUIUnitTest {
      */
     public <T> ComboBoxTester<T> test(ComboBox<T> component) {
         return new ComboBoxTester<>(component);
+    }
+
+    /**
+     * Perform operations with the component as a user. E.g. if the operation
+     * fires an event as an side effect, it has isUserOriginated = true.
+     *
+     * @param component
+     *            The component
+     * @return Tester for operations
+     */
+    public <T extends Temporal & TemporalAdjuster & Serializable & Comparable<? super T>, R extends Enum<R>> AbstractDateFieldTester<T, R> test(
+            AbstractDateField<T, R> component) {
+        return new AbstractDateFieldTester<>(component);
     }
 
     /**

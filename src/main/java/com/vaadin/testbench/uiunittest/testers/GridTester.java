@@ -143,7 +143,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         }
     }
 
-    private void select(Set<T> items) {
+    protected void select(Set<T> items) {
         assert (getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel) : "Grid is not multiselect";
         assert (items != null) : "Items can't be null";
@@ -155,7 +155,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         updateSelection(copy, removed);
     }
 
-    private void deselect(Set<T> items) {
+    protected void deselect(Set<T> items) {
         assert (getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel) : "Grid is not multiselect";
         assert (items != null) : "Items can't be null";
@@ -183,7 +183,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         }
     }
 
-    private void select(T item) {
+    protected void select(T item) {
         assert (getComponent()
                 .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
@@ -205,7 +205,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         }
     }
 
-    private void deselect(T item) {
+    protected void deselect(T item) {
         item = null;
         select(item);
     }

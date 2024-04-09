@@ -20,8 +20,10 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.testbench.uiunittest.views.BinderTestView;
 import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
+import com.vaadin.testbench.uiunittest.views.DateFieldTestView;
 import com.vaadin.testbench.uiunittest.views.FocusTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.MenuBarTestView;
@@ -50,6 +52,8 @@ public class TestUI extends UI {
         addView(CheckBoxGroupTestView.NAME, CheckBoxGroupTestView.class);
         addView(TreeGridTestView.NAME, TreeGridTestView.class);
         addView(FocusTestView.NAME, FocusTestView.class);
+        addView(BinderTestView.NAME, BinderTestView.class);
+        addView(DateFieldTestView.NAME, DateFieldTestView.class);
         setContent(content);
         nav.navigateTo("");
     }
