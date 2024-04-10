@@ -23,7 +23,7 @@ public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
 
     @Override
     public void setValue(T value) {
-        assert (isInteractable()) : "Can't set value to readOnly or disabled field";
+        assert (isInteractable()) : "Can't set value to readonly, hidden or disabled field";
         if (getComponent() instanceof Focusable) {
             focus();
         }

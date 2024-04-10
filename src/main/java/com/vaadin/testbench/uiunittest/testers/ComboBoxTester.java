@@ -31,7 +31,7 @@ public class ComboBoxTester<T> extends AbstractSingleSelectTester<T> {
     public void setInput(String value) {
         ComboBox<T> comboBox = getComponent();
         comboBox.focus();
-        assert (isInteractable()) : "ComboBox is not enabled";
+        assert (isInteractable()) : "Cannot set input to readonly, disabled or hidden ComboBox";
         assert (comboBox
                 .isTextInputAllowed()) : "ComboBox has filter field disabled";
         Class<?> clazz = getComponent().getClass();

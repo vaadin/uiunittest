@@ -5,7 +5,7 @@
 
     <groupId>com.vaadin.testbench</groupId>
     <artifactId>vaadin-uiunittest</artifactId>
-    <version>5.0.0-alpha2</version>
+    <version>5.0.0-alpha3</version>
     <name>UIUnitTest</name>
     <description>UIUnitTest for Vaadin 8</description>
 
@@ -121,27 +121,6 @@
     <build>
 	<defaultGoal>jetty:run</defaultGoal>
         <plugins>
-			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>8.14.3</version>
-				<configuration>
-					<webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
-					<style>OBF</style>
-				</configuration>
-				<executions>
-					<!-- You are free to mark this as permanently ignored in
-					Eclipse -->
-					<execution>
-						<goals>
-							<goal>resources</goal>
-							<goal>update-widgetset</goal>
-							<goal>compile</goal>
-							<goal>compile-theme</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -170,7 +149,7 @@
                         the test package. -->
                     <useTestScope>true</useTestScope>
                     <supportedPackagings>
-	                <supportedPackaging>jar</supportedPackaging>
+	                    <supportedPackaging>jar</supportedPackaging>
                     </supportedPackagings>
                 </configuration>
             </plugin>
@@ -178,6 +157,26 @@
     </build>
 
     <profiles>
+		<profile>
+			<id>run</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>vaadin-server</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>vaadin-client-compiled</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>vaadin-themes</artifactId>
+                    <scope>test</scope>
+                </dependency>
+    	    </dependencies>
+		</profile>
         <profile>
             <id>directory</id>
             <build>

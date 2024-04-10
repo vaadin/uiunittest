@@ -14,6 +14,7 @@ import java.time.temporal.TemporalAdjuster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -65,7 +66,9 @@ public abstract class AbstractUIUnitTest {
      * side components. Session is locked. UI and VaadinSession thread locals
      * are set.
      *
-     * @see tearDown()
+     * @see #tearDown()
+     * @see #mockVaadin(UI)
+     *
      * @throws ServiceException
      * @return Plank mock UI instance
      */
@@ -76,7 +79,9 @@ public abstract class AbstractUIUnitTest {
      * support. This is makes possible to test more complex UI logic. Session is
      * locked. UI and VaadinSession thread locals are set.
      *
-     * @see tearDown()
+     * @see #mockVaadin()
+     * @see #tearDown()
+     *
      * @param ui
      *            UI instance
      * @throws ServiceException
@@ -87,8 +92,8 @@ public abstract class AbstractUIUnitTest {
      * Do clean-up of the mocked Vaadin created with mockVaadin methods. This
      * may be necessary especially if custom UI have side effects.
      *
-     * @see mockVaadin(ui
-     * @see mockVaadin(UI)
+     * @see #mockVaadin()
+     * @see #mockVaadin(UI)
      */
     public abstract void tearDown();
 
@@ -101,7 +106,7 @@ public abstract class AbstractUIUnitTest {
      *            The navigation path as a String, can include url parameters
      * @param clazz
      *            The class of the target view
-     * @return
+     * @return A view instance
      */
     public <T> T navigate(String name, Class<T> clazz) {
         assert (name != null);
@@ -158,8 +163,19 @@ public abstract class AbstractUIUnitTest {
     public <T extends ClientConnector> QueryResult<T> $(HasComponents container,
             Class<T> clazz) {
         assert (container != null && clazz != null);
-        Iterator<Component> iter = container.iterator();
         QueryResult<T> result = new QueryResult<>();
+        Iterator<Component> iter = container.iterator();
+        if (container instanceof Grid) {
+            Grid grid = (Grid) container;
+            if (grid.getEditor().getBinder() != null) {
+                List<T> fields = (List<T>) grid.getEditor().getBinder()
+                        .getFields()
+                        .filter(field -> field.getClass()
+                                .isAssignableFrom(clazz))
+                        .collect(Collectors.toList());
+                result.addAll(fields);
+            }
+        }
         while (iter.hasNext()) {
             Component component = iter.next();
             if (component.getClass().equals(clazz)) {
@@ -338,8 +354,8 @@ public abstract class AbstractUIUnitTest {
     /**
      * Result type for component searches.
      *
-     * @see $(Class)
-     * @see $(HasComponents, Class)
+     * @see #$(Class)
+     * @see #$(HasComponents, Class)
      *
      * @param <T>
      *            Component type

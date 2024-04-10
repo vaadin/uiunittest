@@ -53,7 +53,13 @@ public class BinderTestView extends TestView {
             binder.setReadOnly(true);
         });
 
-        layout.addComponents(form, disable, readOnly);
+        Button hide = new Button("Hide");
+        hide.addClickListener(e -> {
+            form.setVisible(false);
+        });
+
+        layout.addComponents(form, disable, readOnly, hide);
+        layout.setExpandRatio(form, 1);
         return layout;
     }
 

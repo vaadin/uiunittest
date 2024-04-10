@@ -25,6 +25,7 @@ import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
 import com.vaadin.testbench.uiunittest.views.DateFieldTestView;
 import com.vaadin.testbench.uiunittest.views.FocusTestView;
+import com.vaadin.testbench.uiunittest.views.GridEditorTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.MenuBarTestView;
 import com.vaadin.testbench.uiunittest.views.TabSheetTestView;
@@ -54,6 +55,7 @@ public class TestUI extends UI {
         addView(FocusTestView.NAME, FocusTestView.class);
         addView(BinderTestView.NAME, BinderTestView.class);
         addView(DateFieldTestView.NAME, DateFieldTestView.class);
+        addView(GridEditorTestView.NAME, GridEditorTestView.class);
         setContent(content);
         nav.navigateTo("");
     }

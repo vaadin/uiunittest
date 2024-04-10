@@ -38,7 +38,6 @@ public class TreeGridTester<T> extends GridTester<T> {
     }
 
     private void expand(T item) {
-        assert (getComponent().isEnabled()) : "TreeGrid is in disabled state";
         HierarchicalDataCommunicator<T> communicator = getComponent()
                 .getDataCommunicator();
         if (!communicator.isExpanded(item) && communicator.hasChildren(item)) {
@@ -52,7 +51,6 @@ public class TreeGridTester<T> extends GridTester<T> {
     }
 
     private void collapse(T item) {
-        assert (getComponent().isEnabled()) : "TreeGrid is in disabled state";
         assert (isCollapseAllowed(item)) : "TreeGrid Collapse not allowed";
         HierarchicalDataCommunicator<T> communicator = getComponent()
                 .getDataCommunicator();

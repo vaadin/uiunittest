@@ -28,11 +28,11 @@ public class AbstractSingleSelectTester<T>
      *            Item to click
      */
     public void clickItem(T item) {
+        assert (isInteractable()) : "Can't set value to readonly, hidden or disabled field";
         setValue(item);
     }
 
     protected void setValue(T value) {
-        assert (isInteractable()) : "Can't set value to readOnly or disabled field";
         if (getComponent() instanceof Focusable) {
             focus();
         }

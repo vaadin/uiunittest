@@ -41,7 +41,7 @@ public abstract class Tester<T extends AbstractComponent> {
      * @return boolean value
      */
     public boolean isInteractable() {
-        return isEnabled() && getComponent().isVisible();
+        return isEnabled() && isVisible();
     }
 
     // Component#isEnabled() returns components immediate enabled state
@@ -59,6 +59,20 @@ public abstract class Tester<T extends AbstractComponent> {
             }
         }
         return component.isEnabled();
+    }
+
+    private boolean isVisible() {
+        Component component = getComponent();
+        if (!component.isVisible()) {
+            return false;
+        }
+        while (component.getParent() != null) {
+            component = component.getParent();
+            if (!component.isVisible()) {
+                return false;
+            }
+        }
+        return component.isVisible();
     }
 
     /**
@@ -119,6 +133,10 @@ public abstract class Tester<T extends AbstractComponent> {
      * Attempt to focus the component as a user. If the component is not
      * Focusable this does nothing. If the UI had a previous component focused,
      * it will be blurred.
+     * <p>
+     * <em>Note</em>: There is a limitation. Programmatic call to focus() in
+     * application logic will not fire focus and blur events, as it requires
+     * client roundtrip.
      */
     public void focus() {
         if (getComponent() instanceof Focusable) {

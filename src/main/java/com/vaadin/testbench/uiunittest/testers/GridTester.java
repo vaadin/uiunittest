@@ -8,19 +8,27 @@
  */
 package com.vaadin.testbench.uiunittest.testers;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.EventObject;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vaadin.data.ValidationException;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.event.EventRouter;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
 import com.vaadin.testbench.uiunittest.Utils;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.EditorCancelEvent;
+import com.vaadin.ui.components.grid.EditorImpl;
+import com.vaadin.ui.components.grid.EditorOpenEvent;
+import com.vaadin.ui.components.grid.EditorSaveEvent;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
@@ -50,11 +58,6 @@ public class GridTester<T> extends Tester<Grid<T>> {
         ValueProvider<T, ?> vp = getComponent().getColumns().get(column)
                 .getValueProvider();
         Object content = vp.apply(cat);
-        if (content instanceof AbstractComponent) {
-            AbstractComponent component = ((AbstractComponent) content);
-            component.setParent(getComponent());
-            component.attach();
-        }
         return vp.apply(cat);
     }
 
@@ -143,6 +146,127 @@ public class GridTester<T> extends Tester<Grid<T>> {
         }
     }
 
+    /**
+     * Simulate user opening the editor if Grid and Editor are interactable.
+     * This will fire EditorOpenEvent and populate the editor with the item.
+     * <p>
+     * <em>Note</em>: There is a limitation. Programmatic opening of the editor
+     * from application logic will require client round trip, which is not
+     * possible in Unit testing. E.g. if you have ItemClickListener that opens
+     * the editor, clicking the item will do nothing.
+     *
+     * @see #editorOpen()
+     * @see #cancel()
+     * @see #save()
+     *
+     * @param row
+     *            Row index to start the editor
+     */
+    public void edit(int row) {
+        Grid<T> grid = getComponent();
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
+        T editing = item(row);
+        if (grid.getEditor().isBuffered()) {
+            grid.getEditor().editRow(row);
+            grid.getEditor().getBinder().readBean(editing);
+        } else {
+            grid.getEditor().getBinder().setBean(editing);
+        }
+        fireEditorEvent(new EditorOpenEvent<T>(grid.getEditor(), editing));
+        VaadinSession.getCurrent().setAttribute(grid.toString(), editing);
+    }
+
+    /**
+     * Returns the open state of the Editor.
+     *
+     * @see #edit(int)
+     * @see #save()
+     * @see #cancel()
+     *
+     * @return boolean value
+     */
+    public boolean editorOpen() {
+        @SuppressWarnings("unchecked")
+        T editing = (T) VaadinSession.getCurrent()
+                .getAttribute(getComponent().toString());
+        return (editing != null);
+    }
+
+    /**
+     * Simulates clicking save button of the editor. If Editor is in buffered
+     * mode, bean is written if is valid. Validation errors will prevent editor
+     * saving and closing. If save is success, Editor is closed and
+     * EditorSaveEvent will be fired.
+     * <p>
+     * <em>Note</em>: There is a limitation. Programmatic saving of the editor
+     * from application logic will require client round trip, which is not
+     * possible in Unit testing. E.g. if you have logic that force saves the
+     * editor, it will do nothing.
+     *
+     * @see #edit(int)
+     * @see #cancel()
+     */
+    public void save() {
+        Grid<T> grid = getComponent();
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
+        assert (editorOpen()) : "Editor is closed";
+        @SuppressWarnings("unchecked")
+        T editing = (T) VaadinSession.getCurrent()
+                .getAttribute(getComponent().toString());
+        if (grid.getEditor().isBuffered()) {
+            try {
+                grid.getEditor().getBinder().writeBean(editing);
+                grid.getEditor().save();
+            } catch (ValidationException e) {
+            }
+        } else {
+            grid.getEditor().save();
+        }
+        fireEditorEvent(new EditorSaveEvent<T>(grid.getEditor(), editing));
+        grid.getDataProvider().refreshItem(editing);
+        VaadinSession.getCurrent().setAttribute(getComponent().toString(),
+                null);
+    }
+
+    /**
+     * Simulates clicking cancel button of the editor. If Editor is in buffered
+     * mode, bean is not written and Grid is not updated. Editor is closed.
+     *
+     * @see #editorOpen()
+     * @see #edit(int)
+     * @see #save()
+     */
+    public void cancel() {
+        Grid<T> grid = getComponent();
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
+        assert (editorOpen()) : "Editor is closed";
+        @SuppressWarnings("unchecked")
+        T editing = (T) VaadinSession.getCurrent()
+                .getAttribute(getComponent().toString());
+        fireEditorEvent(new EditorCancelEvent<T>(grid.getEditor(), editing));
+        VaadinSession.getCurrent().setAttribute(getComponent().toString(),
+                null);
+    }
+
+    private void fireEditorEvent(EventObject event) {
+        @SuppressWarnings("unchecked")
+        Grid<T> grid = getComponent();
+        Class<EditorImpl<T>> clazz = (Class<EditorImpl<T>>) grid.getEditor()
+                .getClass();
+        try {
+            Field field = clazz.getDeclaredField("eventRouter");
+            field.setAccessible(true);
+            EventRouter eventRouter = (EventRouter) field.get(grid.getEditor());
+            eventRouter.fireEvent(event);
+        } catch (NoSuchFieldException | SecurityException
+                | IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected void select(Set<T> items) {
         assert (getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel) : "Grid is not multiselect";
@@ -184,8 +308,6 @@ public class GridTester<T> extends Tester<Grid<T>> {
     }
 
     protected void select(T item) {
-        assert (getComponent()
-                .isEnabled()) : "Can't interact with disabled Grid";
         assert (getComponent()
                 .getSelectionModel() instanceof SingleSelectionModel) : "Grid is not singleselect";
         String key = getComponent().getDataCommunicator().getKeyMapper()

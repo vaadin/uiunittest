@@ -56,7 +56,7 @@ public class TabSheetTester extends Tester<TabSheet> {
      * Simulate user clicking a Tab by its index, the SelectedTabC.hangeEvent
      * fired will have isUserOriginated = true
      * 
-     * @param tab
+     * @param index
      *            The Tab index
      */
     public void click(int index) {

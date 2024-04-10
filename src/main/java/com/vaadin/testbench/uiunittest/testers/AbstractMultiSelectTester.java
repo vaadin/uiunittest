@@ -45,7 +45,7 @@ public class AbstractMultiSelectTester<T>
     }
 
     protected void setValue(Set<T> value) {
-        assert (isInteractable()) : "Can't set value to readOnly or disabled field";
+        assert (isInteractable()) : "Can't set value to readonly, hidden or disabled field";
         AbstractMultiSelect<T> field = getComponent();
         if (field instanceof Focusable) {
             focus();

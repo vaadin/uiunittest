@@ -38,7 +38,7 @@ public class AbstractDateFieldTester<T extends Temporal & TemporalAdjuster & Ser
     public void setInput(String value) {
         AbstractDateField<T, R> dateField = getComponent();
         dateField.focus();
-        assert (isInteractable()) : "DateField is not enabled";
+        assert (isInteractable()) : "Can't set value to readonly, hidden or disabled field";
 
         Map<String, Integer> resolutions = new HashMap<>();
         String format = dateField.getDateFormat();

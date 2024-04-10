@@ -52,6 +52,24 @@ public class BinderTest extends UIUnitTest {
     }
 
     @Test
+    public void formHidden() {
+        test($(Button.class).caption("Hide").first()).click();
+        assertFalse(test($(TextField.class).caption("First name").first())
+                .isInteractable());
+        assertFalse(test($(TextField.class).caption("Last name").first())
+                .isInteractable());
+
+        int err = 0;
+        try {
+            test($(TextField.class).caption("First name").first())
+                    .setValue("Test");
+        } catch (AssertionError e) {
+            err++;
+        }
+        assertEquals(1, err);
+    }
+
+    @Test
     public void binderReadOnly() {
         test($(Button.class).caption("Read only").first()).click();
         assertFalse(test($(TextField.class).caption("First name").first())
