@@ -15,7 +15,9 @@ import java.util.Optional;
 import com.vaadin.testbench.uiunittest.TestView;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 
 public class ComboBoxTestView extends TestView {
     public static final String NAME = "combobox";
@@ -27,6 +29,7 @@ public class ComboBoxTestView extends TestView {
 
     @Override
     public Component getComponent() {
+        VerticalLayout layout = new VerticalLayout();
         ComboBox<String> comboBox = new ComboBox<>("Select");
         List<String> items = Arrays.asList("One", "Two", "Three");
 
@@ -37,11 +40,15 @@ public class ComboBoxTestView extends TestView {
         });
 
         comboBox.setNewItemProvider(newValue -> {
+            Label label = new Label("New");
+            label.setId("new");
+            layout.addComponent(label);
             return Optional.of(newValue);
         });
 
         comboBox.setItems(items);
-        return comboBox;
+        layout.addComponent(comboBox);
+        return layout;
     }
 
 }

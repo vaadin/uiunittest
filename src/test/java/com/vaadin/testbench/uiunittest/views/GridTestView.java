@@ -8,6 +8,7 @@
  */
 package com.vaadin.testbench.uiunittest.views;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,7 +43,8 @@ public class GridTestView extends TestView {
                 .collect(Collectors.toList());
 
         Grid<Bean> grid = new Grid<>();
-        grid.addColumn(item -> item.getId()).setCaption("ID");
+        grid.addColumn(item -> item.getId()).setCaption("ID").setSortable(true)
+                .setComparator((a, b) -> a.getId() - b.getId());
         grid.addComponentColumn(item -> {
             HorizontalLayout layout = new HorizontalLayout();
             TextField field = new TextField();
@@ -54,7 +56,7 @@ public class GridTestView extends TestView {
             });
             layout.addComponents(field, button);
             return layout;
-        }).setCaption("VALUE");
+        }).setCaption("VALUE").setHidable(true).setSortable(false);
 
         grid.setItems(data);
         grid.setSelectionMode(SelectionMode.NONE);
@@ -74,6 +76,19 @@ public class GridTestView extends TestView {
                         }
                     });
                 }
+            }
+        });
+
+        grid.addSortListener(e -> {
+            if (e.isUserOriginated()) {
+                Notification.show(
+                        "Sort: " + e.getSortOrder().get(0).getDirection());
+            }
+        });
+
+        grid.addColumnVisibilityChangeListener(e -> {
+            if (e.isUserOriginated()) {
+                Notification.show("Hidden: " + e.isHidden());
             }
         });
 

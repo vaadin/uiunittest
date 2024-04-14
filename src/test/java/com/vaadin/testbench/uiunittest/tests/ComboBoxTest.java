@@ -19,6 +19,7 @@ import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 public class ComboBoxTest extends UIUnitTest {
@@ -54,6 +55,7 @@ public class ComboBoxTest extends UIUnitTest {
     public void newValue() {
         test($(ComboBox.class).first()).setInput("Four");
         assertEquals("Four", $(Notification.class).last().getCaption());
+        assertEquals("New", $(Label.class).id("new").getValue());
     }
 
 }

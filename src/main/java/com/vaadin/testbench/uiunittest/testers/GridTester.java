@@ -11,20 +11,25 @@ package com.vaadin.testbench.uiunittest.testers;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.event.EventRouter;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.shared.ui.grid.ColumnState;
 import com.vaadin.testbench.uiunittest.Utils;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.components.grid.EditorCancelEvent;
 import com.vaadin.ui.components.grid.EditorImpl;
 import com.vaadin.ui.components.grid.EditorOpenEvent;
@@ -42,10 +47,11 @@ public class GridTester<T> extends Tester<Grid<T>> {
 
     /**
      * Return the content of the cell. If ComponentRenderer was used it is the
-     * Component produced by the renderer otherwise it is the value.
+     * Component produced by the renderer otherwise it is the value. Asserts
+     * that column is visible.
      *
      * @param column
-     *            Column index
+     *            Column index including hidden columns
      * @param row
      *            The row index
      * @return Cell content
@@ -54,11 +60,13 @@ public class GridTester<T> extends Tester<Grid<T>> {
         assert (column > -1 && column < getComponent().getColumns()
                 .size()) : "Column out of bounds";
         assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (!getComponent().getColumns().get(column)
+                .isHidden()) : "The column is hidden";
         T cat = (T) item(row);
         ValueProvider<T, ?> vp = getComponent().getColumns().get(column)
                 .getValueProvider();
         Object content = vp.apply(cat);
-        return vp.apply(cat);
+        return content;
     }
 
     /**
@@ -85,10 +93,11 @@ public class GridTester<T> extends Tester<Grid<T>> {
 
     /**
      * Simulate click in given cell. Will trigger ItemClick event as a user. If
-     * selection mode is Single, selection is updated accordingly.
+     * selection mode is Single, selection is updated accordingly. Asserts that
+     * column is visible.
      *
      * @param column
-     *            Column index
+     *            Column index including hidden columns
      * @param row
      *            Row index
      */
@@ -97,6 +106,8 @@ public class GridTester<T> extends Tester<Grid<T>> {
         assert (column > -1 && column < getComponent().getColumns()
                 .size()) : "Column out of bounds";
         assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (!getComponent().getColumns().get(column)
+                .isHidden()) : "The column is hidden";
         T item = item(row);
         MouseEventDetails details = new MouseEventDetails();
         details.setButton(MouseButton.LEFT);
@@ -174,7 +185,38 @@ public class GridTester<T> extends Tester<Grid<T>> {
             grid.getEditor().getBinder().setBean(editing);
         }
         fireEditorEvent(new EditorOpenEvent<T>(grid.getEditor(), editing));
-        VaadinSession.getCurrent().setAttribute(grid.toString(), editing);
+        setEdited(editing);
+    }
+
+    private void setEdited(T edited) {
+        Grid<T> grid = getComponent();
+        EditorImpl<T> editor = (EditorImpl<T>) grid.getEditor();
+        @SuppressWarnings("rawtypes")
+        Class<? extends EditorImpl> clazz = editor.getClass();
+        try {
+            Field editedField = clazz.getDeclaredField("edited");
+            editedField.setAccessible(true);
+            editedField.set(editor, edited);
+        } catch (NoSuchFieldException | SecurityException
+                | IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private T getEdited() {
+        Grid<T> grid = getComponent();
+        EditorImpl<T> editor = (EditorImpl<T>) grid.getEditor();
+        Class<? extends EditorImpl> clazz = editor.getClass();
+        try {
+            Field editedField = clazz.getDeclaredField("edited");
+            editedField.setAccessible(true);
+            return (T) editedField.get(editor);
+        } catch (NoSuchFieldException | SecurityException
+                | IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -187,10 +229,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      * @return boolean value
      */
     public boolean editorOpen() {
-        @SuppressWarnings("unchecked")
-        T editing = (T) VaadinSession.getCurrent()
-                .getAttribute(getComponent().toString());
-        return (editing != null);
+        return getComponent().getEditor().isOpen();
     }
 
     /**
@@ -212,22 +251,16 @@ public class GridTester<T> extends Tester<Grid<T>> {
         assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
         assert (editorOpen()) : "Editor is closed";
-        @SuppressWarnings("unchecked")
-        T editing = (T) VaadinSession.getCurrent()
-                .getAttribute(getComponent().toString());
+        T editing = getEdited();
         if (grid.getEditor().isBuffered()) {
             try {
                 grid.getEditor().getBinder().writeBean(editing);
-                grid.getEditor().save();
             } catch (ValidationException e) {
             }
-        } else {
-            grid.getEditor().save();
         }
         fireEditorEvent(new EditorSaveEvent<T>(grid.getEditor(), editing));
         grid.getDataProvider().refreshItem(editing);
-        VaadinSession.getCurrent().setAttribute(getComponent().toString(),
-                null);
+        setEdited(null);
     }
 
     /**
@@ -243,17 +276,120 @@ public class GridTester<T> extends Tester<Grid<T>> {
         assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
         assert (editorOpen()) : "Editor is closed";
-        @SuppressWarnings("unchecked")
-        T editing = (T) VaadinSession.getCurrent()
-                .getAttribute(getComponent().toString());
+        T editing = getEdited();
         fireEditorEvent(new EditorCancelEvent<T>(grid.getEditor(), editing));
-        VaadinSession.getCurrent().setAttribute(getComponent().toString(),
-                null);
+        setEdited(null);
     }
 
-    private void fireEditorEvent(EventObject event) {
-        @SuppressWarnings("unchecked")
+    /**
+     * Toggles the visibility of the given column by index. The
+     * ColumnVisibilityChangeEvent fired will have userOriginated = true.
+     *
+     * @param columnIndex
+     *            int
+     */
+    public void toggleColumnVisibility(int columnIndex) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         Grid<T> grid = getComponent();
+        assert (columnIndex < grid.getColumns().size()
+                && columnIndex > -1) : "Column index out of bounds";
+        Column<T, ?> column = grid.getColumns().get(columnIndex);
+        assert column
+                .isHidable() : "Column hiding is not enabled for this column";
+        boolean hidden = column.isHidden();
+        Class<?> clazz = column.getClass();
+        try {
+            Method getStateMethod = clazz.getDeclaredMethod("getState");
+            getStateMethod.setAccessible(true);
+            ColumnState state = (ColumnState) getStateMethod.invoke(column);
+            state.hidden = !hidden;
+            grid.fireColumnVisibilityChangeEvent(column, !hidden, true);
+        } catch (NoSuchMethodException | SecurityException
+                | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Toggles the visibility of the given column by caption value. The
+     * ColumnVisibilityChangeEvent fired will have userOriginated = true.
+     * 
+     * @param caption
+     *            The caption as string
+     */
+    public void toggleColumnVisibility(String caption) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        Grid<T> grid = getComponent();
+        for (int i = 0; i < grid.getColumns().size(); i++) {
+            Column<T, ?> column = grid.getColumns().get(i);
+            String hidingCaption = column.getHidingToggleCaption() == null
+                    ? column.getCaption()
+                    : column.getHidingToggleCaption();
+            if (hidingCaption.equals(caption)) {
+                toggleColumnVisibility(i);
+                return;
+            }
+        }
+        assert (false) : "No match for the given caption";
+    }
+
+    /**
+     * Simulate toggling of the sorting direction of the column. Asserts that
+     * column is visible. SortEvent fired will have userOriginated = true.
+     *
+     * @param columnIndex
+     *            Index of the column including hidden columns.
+     */
+    public void toggleColumnSorting(int columnIndex) {
+        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        Grid<T> grid = getComponent();
+        assert (columnIndex < grid.getColumns().size()
+                && columnIndex > -1) : "Column index out of bounds";
+        assert (!grid.getColumns().get(columnIndex)
+                .isHidden()) : "The column is hidden";
+        Column<T, ?> column = grid.getColumns().get(columnIndex);
+        assert column
+                .isSortable() : "Column sorting is not enabled for this column";
+        List<GridSortOrder<T>> newOrders = new ArrayList<>();
+        boolean changed = false;
+        for (int i = 0; i < grid.getSortOrder().size(); i++) {
+            GridSortOrder<T> order = grid.getSortOrder().get(i);
+            GridSortOrder<T> newOrder;
+            if (order.getSorted().equals(column)) {
+                SortDirection newDirection = order.getDirection().getOpposite();
+                newOrder = new GridSortOrder<>(order.getSorted(), newDirection);
+                changed = true;
+            } else {
+                newOrder = new GridSortOrder<>(order.getSorted(),
+                        order.getDirection());
+            }
+            newOrders.add(newOrder);
+        }
+        if (!changed) {
+            newOrders.add(new GridSortOrder<>(column, SortDirection.ASCENDING));
+        }
+
+        Class<?> clazz = getComponent().getClass();
+        while (!clazz.equals(Grid.class)) {
+            clazz = clazz.getSuperclass();
+        }
+        try {
+            Method setSortOrderMethod = clazz.getDeclaredMethod("setSortOrder",
+                    List.class, Boolean.TYPE);
+            setSortOrderMethod.setAccessible(true);
+            setSortOrderMethod.invoke(getComponent(), newOrders, true);
+        } catch (NoSuchMethodException | SecurityException
+                | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Internal utility method for firing simulated Editor events
+    private void fireEditorEvent(EventObject event) {
+        Grid<T> grid = getComponent();
+        @SuppressWarnings("unchecked")
         Class<EditorImpl<T>> clazz = (Class<EditorImpl<T>>) grid.getEditor()
                 .getClass();
         try {

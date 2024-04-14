@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2000-2024 Vaadin Ltd
+ *
+ * This program is available under Vaadin Commercial License and Service Terms.
+ *
+ * See <https://vaadin.com/commercial-license-and-service-terms> for the full
+ * license.
+ */
 package com.vaadin.testbench.uiunittest.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -87,6 +95,7 @@ public class GridEditorTest extends UIUnitTest {
         assertEquals("Editing: Data0",
                 $(Notification.class).last().getCaption());
         assertTrue(test(grid).editorOpen());
+        assertTrue(grid.getEditor().isOpen());
 
         test($(TextField.class).id("name")).setValue("New name");
         test($(TextField.class).id("value")).setValue("New value");
@@ -94,6 +103,7 @@ public class GridEditorTest extends UIUnitTest {
         assertEquals("Saved: New name",
                 $(Notification.class).last().getCaption());
         assertFalse(test(grid).editorOpen());
+        assertFalse(grid.getEditor().isOpen());
 
         assertEquals("New name", test(grid).cell(0, 0));
         assertEquals("New value", test(grid).cell(1, 0));
@@ -110,6 +120,7 @@ public class GridEditorTest extends UIUnitTest {
         assertEquals("Editing: Data0",
                 $(Notification.class).last().getCaption());
         assertTrue(test(grid).editorOpen());
+        assertTrue(grid.getEditor().isOpen());
 
         test($(TextField.class).id("name")).setValue("New name");
         test($(TextField.class).id("value")).setValue("New value");
@@ -117,6 +128,7 @@ public class GridEditorTest extends UIUnitTest {
         assertEquals("Cancelled: Data0",
                 $(Notification.class).last().getCaption());
         assertFalse(test(grid).editorOpen());
+        assertFalse(grid.getEditor().isOpen());
 
         assertEquals("Data0", test(grid).cell(0, 0));
         assertEquals("Value0", test(grid).cell(1, 0));
@@ -135,6 +147,7 @@ public class GridEditorTest extends UIUnitTest {
         assertEquals("Editing: Data0",
                 $(Notification.class).last().getCaption());
         assertTrue(test(grid).editorOpen());
+        assertTrue(grid.getEditor().isOpen());
 
         test($(TextField.class).id("name")).setValue("New name");
         test($(TextField.class).id("value")).setValue("New value");
@@ -142,6 +155,7 @@ public class GridEditorTest extends UIUnitTest {
         assertEquals("Saved: New name",
                 $(Notification.class).last().getCaption());
         assertFalse(test(grid).editorOpen());
+        assertFalse(grid.getEditor().isOpen());
 
         assertEquals("New name", test(grid).cell(0, 0));
         assertEquals("New value", test(grid).cell(1, 0));

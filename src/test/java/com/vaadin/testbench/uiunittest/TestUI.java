@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
@@ -28,6 +29,8 @@ import com.vaadin.testbench.uiunittest.views.FocusTestView;
 import com.vaadin.testbench.uiunittest.views.GridEditorTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
 import com.vaadin.testbench.uiunittest.views.MenuBarTestView;
+import com.vaadin.testbench.uiunittest.views.PanelTestView;
+import com.vaadin.testbench.uiunittest.views.PushTestView;
 import com.vaadin.testbench.uiunittest.views.TabSheetTestView;
 import com.vaadin.testbench.uiunittest.views.TreeGridTestView;
 import com.vaadin.ui.UI;
@@ -35,6 +38,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
+@Push
 @Theme(ValoTheme.THEME_NAME)
 public class TestUI extends UI {
 
@@ -56,6 +60,8 @@ public class TestUI extends UI {
         addView(BinderTestView.NAME, BinderTestView.class);
         addView(DateFieldTestView.NAME, DateFieldTestView.class);
         addView(GridEditorTestView.NAME, GridEditorTestView.class);
+        addView(PushTestView.NAME, PushTestView.class);
+        addView(PanelTestView.NAME, PanelTestView.class);
         setContent(content);
         nav.navigateTo("");
     }

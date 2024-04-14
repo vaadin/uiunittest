@@ -5,7 +5,7 @@
 
     <groupId>com.vaadin.testbench</groupId>
     <artifactId>vaadin-uiunittest</artifactId>
-    <version>5.0.0-alpha3</version>
+    <version>5.0.0-alpha4</version>
     <name>UIUnitTest</name>
     <description>UIUnitTest for Vaadin 8</description>
 
@@ -98,6 +98,11 @@
     		<artifactId>vaadin-server</artifactId>
     		<scope>provided</scope>
     	</dependency>
+    	<dependency>
+    		<groupId>com.vaadin</groupId>
+    		<artifactId>vaadin-push</artifactId>
+    		<scope>provided</scope>
+    	</dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -175,6 +180,11 @@
                     <artifactId>vaadin-themes</artifactId>
                     <scope>test</scope>
                 </dependency>
+    	        <dependency>
+    		        <groupId>com.vaadin</groupId>
+    		        <artifactId>vaadin-push</artifactId>
+    		        <scope>test</scope>
+    	         </dependency>
     	    </dependencies>
 		</profile>
         <profile>

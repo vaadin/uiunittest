@@ -17,20 +17,19 @@ import org.junit.Test;
 import com.vaadin.server.ServiceException;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
-import com.vaadin.testbench.uiunittest.views.FocusTestView;
+import com.vaadin.testbench.uiunittest.views.PanelTestView;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 
-public class FocusTest extends UIUnitTest {
+public class PanelTest extends UIUnitTest {
 
     private TestUI ui;
-    private FocusTestView view;
+    private PanelTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(FocusTestView.NAME, FocusTestView.class);
+        view = navigate(PanelTestView.NAME, PanelTestView.class);
     }
 
     @After
@@ -39,11 +38,13 @@ public class FocusTest extends UIUnitTest {
     }
 
     @Test
-    public void focus() {
-        test($(TextField.class).caption("Last name").first()).focus();
-        assertEquals("Last name focused",
-                $(Label.class).id("focus").getValue());
-        assertEquals("First name blurred",
-                $(Label.class).id("blur").getValue());
+    public void findInPanel() {
+        assertEquals("First", $(Label.class).id("first").getValue());
+
+        assertEquals("Second",
+                $(Label.class).styleName("second").single().getValue());
+
+        assertEquals("Third",
+                $(Label.class).caption("Third").single().getValue());
     }
 }

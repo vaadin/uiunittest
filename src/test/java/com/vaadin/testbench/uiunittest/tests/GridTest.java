@@ -9,6 +9,8 @@
 package com.vaadin.testbench.uiunittest.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Set;
@@ -139,5 +141,68 @@ public class GridTest extends UIUnitTest {
             test(grid).click(0, i);
             assertEquals("Value " + i, $(Label.class).id("clicked").getValue());
         }
+    }
+
+    @Test
+    public void sorting() {
+        Grid<Bean> grid = $(Grid.class).single();
+
+        test(grid).toggleColumnSorting(0);
+        assertEquals("Sort: ASCENDING",
+                $(Notification.class).last().getCaption());
+        for (int i = 0; i < 10; i++) {
+            assertEquals(i, test(grid).cell(0, i));
+        }
+
+        test(grid).toggleColumnSorting(0);
+        assertEquals("Sort: DESCENDING",
+                $(Notification.class).last().getCaption());
+        for (int i = 0; i < 10; i++) {
+            assertEquals(9 - i, test(grid).cell(0, i));
+        }
+
+        test(grid).toggleColumnSorting(0);
+        assertEquals("Sort: ASCENDING",
+                $(Notification.class).last().getCaption());
+        for (int i = 0; i < 10; i++) {
+            assertEquals(i, test(grid).cell(0, i));
+        }
+    }
+
+    @Test
+    public void sortingNotEnabled() {
+        Grid<Bean> grid = $(Grid.class).single();
+
+        int err = 0;
+        try {
+            test(grid).toggleColumnSorting(1);
+        } catch (AssertionError e) {
+            err++;
+        }
+        assertEquals(1, err);
+    }
+
+    @Test
+    public void hiding() {
+        Grid<Bean> grid = $(Grid.class).single();
+
+        test(grid).toggleColumnVisibility(1);
+        assertEquals("Hidden: true", $(Notification.class).last().getCaption());
+        assertTrue(grid.getColumns().get(1).isHidden());
+
+        int err = 0;
+        try {
+            Object value = test(grid).cell(1, 0);
+        } catch (AssertionError e) {
+            err++;
+        }
+        assertEquals(1, err);
+
+        test(grid).toggleColumnVisibility("VALUE");
+        assertEquals("Hidden: false", $(Notification.class).last().getCaption());
+        assertFalse(grid.getColumns().get(1).isHidden());
+
+        Object value = test(grid).cell(1, 0);
+        assertFalse(value == null);
     }
 }

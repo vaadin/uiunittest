@@ -39,6 +39,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractDateField;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractMultiSelect;
+import com.vaadin.ui.AbstractSingleComponentContainer;
 import com.vaadin.ui.AbstractSingleSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -47,6 +48,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.UI;
@@ -340,10 +342,21 @@ public abstract class AbstractUIUnitTest {
                     i++;
                 } catch (InterruptedException e) {
                 }
-            } while (condition.test(param) && i < timeout);
+            } while (testWaitCondition(param, condition) && i < timeout);
         } finally {
             VaadinSession.getCurrent().lock();
         }
+    }
+
+    private <T> boolean testWaitCondition(T param, Predicate<T> condition) {
+        boolean result;
+        VaadinSession.getCurrent().lock();
+        try {
+            result = condition.test(param);
+        } finally {
+            VaadinSession.getCurrent().unlock();
+        }
+        return result;
     }
 
     static {
@@ -455,6 +468,7 @@ public abstract class AbstractUIUnitTest {
          * @return Component.
          */
         public T single() {
+            assert (size() != 0) : "There are were no matches";
             assert (size() == 1) : "There are more than one components";
             return get(0);
         }
