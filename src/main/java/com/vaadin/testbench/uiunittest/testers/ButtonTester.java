@@ -18,7 +18,8 @@ public class ButtonTester extends Tester<Button> {
 
     /**
      * Assert that Button is enabled and visible and produce simulated
-     * ClickEvent if it is.
+     * ClickEvent if it is. Button will gain focus and fire focus event as a
+     * side effect.
      */
     public void click() {
         assert (isInteractable()) : "Button is not enabled or visible";

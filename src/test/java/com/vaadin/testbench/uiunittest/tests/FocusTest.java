@@ -39,11 +39,31 @@ public class FocusTest extends UIUnitTest {
     }
 
     @Test
+    public void focusByValue() {
+        test($(TextField.class).caption("Last name").first())
+                .setValue("New value");
+
+        assertEquals("Last name focused",
+                $(Label.class).id("focus1").getValue());
+        assertEquals("First name blurred",
+                $(Label.class).id("blur1").getValue());
+
+        test($(TextField.class).caption("Last name").first())
+                .setValue("Another value");
+        assertEquals(1, view.focusCount);
+        assertEquals(1, view.blurCount);
+    }
+
+    @Test
     public void focus() {
         test($(TextField.class).caption("Last name").first()).focus();
         assertEquals("Last name focused",
-                $(Label.class).id("focus").getValue());
+                $(Label.class).id("focus1").getValue());
         assertEquals("First name blurred",
-                $(Label.class).id("blur").getValue());
+                $(Label.class).id("blur1").getValue());
+
+        test($(TextField.class).caption("Last name").first()).focus();
+        assertEquals(1, view.focusCount);
+        assertEquals(1, view.blurCount);
     }
 }

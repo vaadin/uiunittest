@@ -39,14 +39,15 @@ public class AbstractDateFieldTester<T extends Temporal & TemporalAdjuster & Ser
      * Simulate text input to date field. Asserts that filter field is not
      * disabled. If only one item matches filter, it is selected. If no items
      * match and newItemProvider is present, it will be called with given value.
+     * The DateField will gain focus and fire focus event as a side effect.
      *
      * @param value
      *            String value
      */
     public void setInput(String value) {
         AbstractDateField<T, R> dateField = getComponent();
-        dateField.focus();
         assert (isInteractable()) : "Can't set value to readonly, hidden or disabled field";
+        dateField.focus();
 
         Map<String, Integer> resolutions = new HashMap<>();
         String format = dateField.getDateFormat();

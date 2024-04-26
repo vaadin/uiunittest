@@ -27,6 +27,7 @@ public class AbstractMultiSelectTester<T>
 
     /**
      * Simulate clicking item in multiselect component to toggle its selection.
+     * The field will gain focus and fire focus event as a side effect.
      *
      * @param item
      *            Item to click

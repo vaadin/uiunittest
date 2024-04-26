@@ -22,7 +22,8 @@ public class AbstractSingleSelectTester<T>
     }
 
     /**
-     * Simulate clicking item in single select component to get it selected.
+     * Simulate clicking item in single select component to get it selected. The
+     * field will gain focus and fire focus event as a side effect.
      *
      * @param item
      *            Item to click

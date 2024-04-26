@@ -131,8 +131,9 @@ public abstract class Tester<T extends AbstractComponent> {
 
     /**
      * Attempt to focus the component as a user. If the component is not
-     * Focusable this does nothing. If the UI had a previous component focused,
-     * it will be blurred.
+     * Focusable this does nothing. If component is the current focused item in
+     * the UI, does nothing. If the UI had a previous component focused, it will
+     * be blurred.
      * <p>
      * <em>Note</em>: There is a limitation. Programmatic call to focus() in
      * application logic will not fire focus and blur events, as it requires
@@ -142,6 +143,7 @@ public abstract class Tester<T extends AbstractComponent> {
         if (getComponent() instanceof Focusable) {
             UI ui = UI.getCurrent(); // getComponent().getUI();
             Focusable focused = null;
+            Focusable focusable = (Focusable) getComponent();
             Class<?> clazz = ui.getClass();
             while (!clazz.equals(UI.class)) {
                 clazz = clazz.getSuperclass();
@@ -154,11 +156,14 @@ public abstract class Tester<T extends AbstractComponent> {
                     | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
             }
+            if (focused != null && focused.equals(focusable)) {
+                return;
+            }
             if (focused != null) {
                 fireSimulatedEvent(focused, new BlurEvent(focused));
             }
             ((Focusable) getComponent()).focus();
-            fireSimulatedEvent(new FocusEvent(getComponent()));
+            fireSimulatedEvent(new FocusEvent(focusable));
         }
     }
 

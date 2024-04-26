@@ -17,6 +17,8 @@ import com.vaadin.ui.TextField;
 
 public class FocusTestView extends TestView {
     public static final String NAME = "focus";
+    public int blurCount = 0;
+    public int focusCount = 0;
 
     @Override
     public String getName() {
@@ -30,13 +32,15 @@ public class FocusTestView extends TestView {
         TextField lastName = new TextField("Last name");
         firstName.focus();
         firstName.addBlurListener(e -> {
+            blurCount++;
             Label label = new Label("First name blurred");
-            label.setId("blur");
+            label.setId("blur" + blurCount);
             addComponent(label);
         });
         lastName.addFocusListener(e -> {
+            focusCount++;
             Label label = new Label("Last name focused");
-            label.setId("focus");
+            label.setId("focus" + focusCount);
             addComponent(label);
         });
         layout.addComponents(firstName, lastName);

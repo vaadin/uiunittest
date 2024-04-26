@@ -24,16 +24,17 @@ public class ComboBoxTester<T> extends AbstractSingleSelectTester<T> {
      * Simulate text input to Filter field. Asserts that filter field is not
      * disabled. If only one item matches filter, it is selected. If no items
      * match and newItemProvider is present, it will be called with given value.
+     * ComboBox will gain focus and fire focus event as a side effect.
      *
      * @param value
      *            String value
      */
     public void setInput(String value) {
         ComboBox<T> comboBox = getComponent();
-        comboBox.focus();
         assert (isInteractable()) : "Cannot set input to readonly, disabled or hidden ComboBox";
         assert (comboBox
                 .isTextInputAllowed()) : "ComboBox has filter field disabled";
+        comboBox.focus();
         Class<?> clazz = getComponent().getClass();
         while (!clazz.equals(ComboBox.class)) {
             clazz = clazz.getSuperclass();

@@ -12,7 +12,8 @@ public interface HasValue<T> {
 
     /**
      * Set value as user. This will mean that accompanying event will have
-     * isUserOriginated = true.
+     * isUserOriginated = true. The field will gain focus and fire focus event
+     * as a side effect.
      * 
      * @param value
      *            The value
