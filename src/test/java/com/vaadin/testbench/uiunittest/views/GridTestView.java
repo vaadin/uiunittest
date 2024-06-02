@@ -61,6 +61,10 @@ public class GridTestView extends TestView {
         grid.setItems(data);
         grid.setSelectionMode(SelectionMode.NONE);
 
+        grid.setStyleGenerator(item -> item.getValue() + "_" + item.getId());
+        grid.setDescriptionGenerator(
+                item -> item.getId() + ":" + item.getValue());
+
         RadioButtonGroup<SelectionMode> group = new RadioButtonGroup<>("Mode");
         group.setItems(SelectionMode.values());
 

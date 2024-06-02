@@ -70,6 +70,30 @@ public class GridTester<T> extends Tester<Grid<T>> {
     }
 
     /**
+     * Return the description (aka tooltip) for the row.
+     *
+     * @param row
+     *            The row index, base 0
+     * @return Description String
+     */
+    public String description(int row) {
+        assert (row > -1 && row < size()) : "Row out of bounds";
+        return getComponent().getDescriptionGenerator().apply(item(row));
+    }
+
+    /**
+     * Return the style name (aka CSS class name) for the row.
+     *
+     * @param row
+     *            The row index, base 0
+     * @return Style name String
+     */
+    public String styleName(int row) {
+        assert (row > -1 && row < size()) : "Row out of bounds";
+        return getComponent().getStyleGenerator().apply(item(row));
+    }
+
+    /**
      * Return data item of the row.
      *
      * @param row

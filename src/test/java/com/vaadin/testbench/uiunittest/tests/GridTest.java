@@ -111,7 +111,12 @@ public class GridTest extends UIUnitTest {
     public void gridValues() {
         Grid<Bean> grid = $(Grid.class).single();
         for (int i = 0; i < 10; i++) {
+            Bean item = test(grid).item(i);
             assertEquals(i, test(grid).cell(0, i));
+            assertEquals(item.getId() + ":" + item.getValue(),
+                    test(grid).description(i));
+            assertEquals(item.getValue() + "_" + item.getId(),
+                    test(grid).styleName(i));
         }
     }
 
@@ -199,7 +204,8 @@ public class GridTest extends UIUnitTest {
         assertEquals(1, err);
 
         test(grid).toggleColumnVisibility("VALUE");
-        assertEquals("Hidden: false", $(Notification.class).last().getCaption());
+        assertEquals("Hidden: false",
+                $(Notification.class).last().getCaption());
         assertFalse(grid.getColumns().get(1).isHidden());
 
         Object value = test(grid).cell(1, 0);

@@ -11,6 +11,7 @@ package com.vaadin.testbench.uiunittest.mocks;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -90,7 +91,9 @@ public class MockHttpSession implements HttpSession {
     @Override
     public String[] getValueNames() {
         checkValid();
-        return (String[]) attributes.keySet().toArray();
+        Set<String> keySet = attributes.keySet();
+        String[] keys = new String[keySet.size()];
+        return keySet.toArray(keys);
     }
 
     @Override
