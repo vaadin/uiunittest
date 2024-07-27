@@ -146,6 +146,7 @@ public abstract class Tester<T extends AbstractComponent> {
      * client roundtrip.
      */
     public void focus() {
+        assert (isInteractable()) : "Cannot focus non-interactable component";
         if (getComponent() instanceof Focusable) {
             UI ui = UI.getCurrent(); // getComponent().getUI();
             Focusable focused = null;

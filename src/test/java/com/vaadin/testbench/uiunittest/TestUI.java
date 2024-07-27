@@ -22,6 +22,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.testbench.uiunittest.views.BinderTestView;
+import com.vaadin.testbench.uiunittest.views.ButtonTestView;
 import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
 import com.vaadin.testbench.uiunittest.views.DateFieldTestView;
@@ -59,6 +60,7 @@ public class TestUI extends UI {
         addView(FocusTestView.NAME, FocusTestView.class);
         addView(BinderTestView.NAME, BinderTestView.class);
         addView(DateFieldTestView.NAME, DateFieldTestView.class);
+        addView(ButtonTestView.NAME, ButtonTestView.class);
         addView(GridEditorTestView.NAME, GridEditorTestView.class);
         addView(PushTestView.NAME, PushTestView.class);
         addView(PanelTestView.NAME, PanelTestView.class);
