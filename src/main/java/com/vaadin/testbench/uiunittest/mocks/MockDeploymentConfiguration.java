@@ -15,6 +15,7 @@ import java.util.Properties;
 import com.vaadin.server.AbstractDeploymentConfiguration;
 import com.vaadin.shared.communication.PushMode;
 
+@SuppressWarnings("serial")
 public class MockDeploymentConfiguration
         extends AbstractDeploymentConfiguration {
 

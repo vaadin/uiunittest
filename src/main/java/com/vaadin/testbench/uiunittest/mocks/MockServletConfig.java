@@ -8,6 +8,7 @@
  */
 package com.vaadin.testbench.uiunittest.mocks;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -19,7 +20,8 @@ import javax.servlet.ServletContext;
  *
  * @author Vaadin Ltd
  */
-public class MockServletConfig implements ServletConfig {
+@SuppressWarnings("serial")
+public class MockServletConfig implements ServletConfig, Serializable {
 
     private ServletContext context = new MockServletContext();
     private final Properties initParameters;

@@ -9,6 +9,7 @@
 package com.vaadin.testbench.uiunittest.mocks;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -34,7 +35,8 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  *
  * @author Vaadin Ltd
  */
-public class MockServletContext implements ServletContext {
+@SuppressWarnings("serial")
+public class MockServletContext implements ServletContext, Serializable {
 
     /*
      * (non-Javadoc)
@@ -589,7 +591,7 @@ public class MockServletContext implements ServletContext {
     }
 
     @Override
-    public void setResponseCharacterEncoding(String encoding) {        
+    public void setResponseCharacterEncoding(String encoding) {
     }
 
 }

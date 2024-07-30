@@ -8,6 +8,7 @@
  */
 package com.vaadin.testbench.uiunittest.mocks;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
@@ -20,7 +21,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-public class MockHttpSession implements HttpSession {
+@SuppressWarnings("serial")
+public class MockHttpSession implements HttpSession, Serializable {
 
     private Map<String, Object> attributes = new ConcurrentHashMap<>();
     private String sessionId = UUID.randomUUID().toString();

@@ -23,6 +23,7 @@ import com.vaadin.server.VaadinServletService;
  *
  * @author Vaadin Ltd
  */
+@SuppressWarnings("serial")
 public class MockVaadinService extends VaadinServletService {
 
     public MockVaadinService() throws ServiceException {
