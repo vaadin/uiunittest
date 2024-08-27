@@ -9,6 +9,7 @@
 package com.vaadin.testbench.uiunittest.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -45,6 +46,8 @@ public class FocusTest extends UIUnitTest {
 
         assertEquals("Last name focused",
                 $(Label.class).id("focus1").getValue());
+        assertTrue(test($(TextField.class).caption("Last name").first())
+                .isFocused());
         assertEquals("First name blurred",
                 $(Label.class).id("blur1").getValue());
 
@@ -59,6 +62,8 @@ public class FocusTest extends UIUnitTest {
         test($(TextField.class).caption("Last name").first()).focus();
         assertEquals("Last name focused",
                 $(Label.class).id("focus1").getValue());
+        assertTrue(test($(TextField.class).caption("Last name").first())
+                .isFocused());
         assertEquals("First name blurred",
                 $(Label.class).id("blur1").getValue());
 

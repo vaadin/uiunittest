@@ -174,6 +174,33 @@ public abstract class Tester<T extends AbstractComponent> {
         }
     }
 
+    /**
+     * Test if the component is focused according to UI. If the component is not
+     * Focusable returns false.
+     *
+     * @return boolean value.
+     */
+    public boolean isFocused() {
+        if (getComponent() instanceof Focusable) {
+            UI ui = UI.getCurrent(); // getComponent().getUI();
+            Focusable focused = null;
+            Class<?> clazz = ui.getClass();
+            while (!clazz.equals(UI.class)) {
+                clazz = clazz.getSuperclass();
+            }
+            try {
+                Field field = clazz.getDeclaredField("pendingFocus");
+                field.setAccessible(true);
+                focused = (Focusable) field.get(ui);
+            } catch (NoSuchFieldException | SecurityException
+                    | IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return focused == getComponent();
+        }
+        return false;
+    }
+
     protected T getComponent() {
         return component;
     }
