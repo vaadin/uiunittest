@@ -137,6 +137,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         details.setButton(MouseButton.LEFT);
         Grid.ItemClick<T> event = new Grid.ItemClick<T>(getComponent(),
                 getComponent().getColumns().get(column), item, details, row);
+        getComponent().focus();
         fireSimulatedEvent(event);
         if (getComponent()
                 .getSelectionModel() instanceof SingleSelectionModel) {
@@ -160,6 +161,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
         assert ((getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
         T item = item(row);
+        getComponent().focus();
         clickToSelect(item);
     }
 
@@ -170,10 +172,12 @@ public class GridTester<T> extends Tester<Grid<T>> {
      * @param item
      *            Item
      */
+    @SuppressWarnings("unchecked")
     public void clickToSelect(T item) {
         assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
         assert ((getComponent()
                 .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
+        getComponent().focus();
         if (getComponent().getSelectedItems().contains(item)) {
             deselect(Utils.setOfItems(item));
         } else {

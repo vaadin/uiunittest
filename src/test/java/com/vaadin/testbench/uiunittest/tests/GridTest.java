@@ -51,15 +51,18 @@ public class GridTest extends UIUnitTest {
         tearDown();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void multiSelection() {
         Set<Bean> set = Utils.setOfItems(view.getData().get(0),
                 view.getData().get(1));
 
         Grid<Bean> grid = $(Grid.class).single();
+        assertFalse(test(grid).isFocused());
         test($(RadioButtonGroup.class).caption("Mode").first())
                 .clickItem(SelectionMode.MULTI);
         test(grid).clickToSelect(0);
+        assertTrue(test(grid).isFocused());
         assertEquals("Select 0", $(Notification.class).last().getCaption());
         test(grid).clickToSelect(1);
         assertEquals("Select 0", $(Notification.class).last().getCaption());
@@ -71,14 +74,17 @@ public class GridTest extends UIUnitTest {
         assertEquals(set, grid.getSelectedItems());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void singleSelection() {
         Set<Bean> set = Utils.setOfItems(view.getData().get(1));
 
         Grid<Bean> grid = $(Grid.class).single();
+        assertFalse(test(grid).isFocused());
         test($(RadioButtonGroup.class).caption("Mode").first())
                 .clickItem(SelectionMode.SINGLE);
         test(grid).click(0, 0);
+        assertTrue(test(grid).isFocused());
         assertEquals("Select 0", $(Notification.class).last().getCaption());
         test(grid).click(0, 1);
         assertEquals("Select 1", $(Notification.class).last().getCaption());
@@ -89,6 +95,7 @@ public class GridTest extends UIUnitTest {
         assertEquals(Collections.emptySet(), grid.getSelectedItems());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void gridComponents() {
         Grid<Bean> grid = $(Grid.class).single();
@@ -107,6 +114,7 @@ public class GridTest extends UIUnitTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void gridValues() {
         Grid<Bean> grid = $(Grid.class).single();
@@ -120,6 +128,7 @@ public class GridTest extends UIUnitTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void gridDisabled() {
         Grid<Bean> grid = $(Grid.class).single();
@@ -136,18 +145,22 @@ public class GridTest extends UIUnitTest {
         assertEquals(1, err);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void itemClick() {
         Grid<Bean> grid = $(Grid.class).single();
+        assertFalse(test(grid).isFocused());
 
         assertEquals("", $(Label.class).id("clicked").getValue());
 
         for (int i = 0; i < 10; i++) {
             test(grid).click(0, i);
+            assertTrue(test(grid).isFocused());
             assertEquals("Value " + i, $(Label.class).id("clicked").getValue());
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void sorting() {
         Grid<Bean> grid = $(Grid.class).single();
@@ -174,6 +187,7 @@ public class GridTest extends UIUnitTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void sortingNotEnabled() {
         Grid<Bean> grid = $(Grid.class).single();
@@ -187,6 +201,7 @@ public class GridTest extends UIUnitTest {
         assertEquals(1, err);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void hiding() {
         Grid<Bean> grid = $(Grid.class).single();
