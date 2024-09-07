@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.server.VaadinServletService;
@@ -32,10 +33,13 @@ import com.vaadin.ui.UI;
  */
 public abstract class UIUnitTest extends AbstractUIUnitTest {
 
+    private VaadinServletRequest vaadinRequest;
+    private VaadinServletResponse vaadinResponse;
+
     @Override
     public UI mockVaadin() throws ServiceException {
         MockHttpSession session = new MockHttpSession(new MockServletContext());
-        MockVaadinService service = new MockVaadinService();
+        VaadinServletService service = getService();
         MockVaadinSession vaadinSession = new MockVaadinSession(service,
                 session);
         vaadinSession.lock();
@@ -56,7 +60,7 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
     public void mockVaadin(UI ui) throws ServiceException {
         assert (ui != null) : "UI can't be null";
         MockHttpSession session = new MockHttpSession(new MockServletContext());
-        MockVaadinService service = new MockVaadinService();
+        VaadinServletService service = getService();
         MockVaadinSession vaadinSession = new MockVaadinSession(service,
                 session);
         vaadinSession.lock();
@@ -64,13 +68,13 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
         ui.setSession(vaadinSession);
         UI.setCurrent(ui);
         MockServletRequest request = new MockServletRequest(session);
-        VaadinServletRequest vaadinRequest = new VaadinServletRequest(request,
+        vaadinRequest = new VaadinServletRequest(request,
                 (VaadinServletService) vaadinSession.getService());
         MockServletResponse response = new MockServletResponse();
-        service.setCurrentInstances(vaadinRequest,
-                new VaadinServletResponse(response, service));
+        vaadinResponse = new VaadinServletResponse(response, service);
+        service.setCurrentInstances(vaadinRequest, vaadinResponse);
         ui.getPage().init(vaadinRequest);
-        Class clazz = ui.getClass();
+        Class<?> clazz = ui.getClass();
         try {
             Method initMethod = clazz.getDeclaredMethod("init",
                     VaadinRequest.class);
@@ -83,6 +87,10 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
         }
     }
 
+    protected VaadinServletService getService() throws ServiceException {
+        return new MockVaadinService();
+    }
+
     @Override
     public void tearDown() {
         VaadinSession session = VaadinSession.getCurrent();
@@ -90,6 +98,8 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
         ui.detach();
         ui.close();
         session.close();
+        VaadinService.getCurrent().setCurrentInstances(null, null);
+        VaadinService.setCurrent(null);
         VaadinSession.setCurrent(null);
         UI.setCurrent(null);
     }

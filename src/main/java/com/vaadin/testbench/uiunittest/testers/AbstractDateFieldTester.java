@@ -101,6 +101,7 @@ public class AbstractDateFieldTester<T extends Temporal & TemporalAdjuster & Ser
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected AbstractDateField<T, R> getComponent() {
         return (AbstractDateField<T, R>) super.getComponent();
     }

@@ -69,6 +69,7 @@ public class MockServletConfig implements ServletConfig, Serializable {
      *
      * @see javax.servlet.ServletConfig#getInitParameterNames()
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getInitParameterNames() {
         return initParameters.propertyNames();

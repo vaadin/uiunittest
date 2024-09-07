@@ -21,7 +21,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "deprecation" })
 public class MockHttpSession implements HttpSession, Serializable {
 
     private Map<String, Object> attributes = new ConcurrentHashMap<>();

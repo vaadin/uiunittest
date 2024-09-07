@@ -83,6 +83,7 @@ public class MockServletContext implements ServletContext, Serializable {
      *
      * @see javax.servlet.ServletContext#getResourcePaths(java.lang.String)
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Set getResourcePaths(String path) {
         return null;
@@ -143,6 +144,7 @@ public class MockServletContext implements ServletContext, Serializable {
      *
      * @see javax.servlet.ServletContext#getServlets()
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getServlets() {
         return Collections.enumeration(Collections.emptySet());
@@ -153,6 +155,7 @@ public class MockServletContext implements ServletContext, Serializable {
      *
      * @see javax.servlet.ServletContext#getServletNames()
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getServletNames() {
         return null;
@@ -222,6 +225,7 @@ public class MockServletContext implements ServletContext, Serializable {
      *
      * @see javax.servlet.ServletContext#getInitParameterNames()
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getInitParameterNames() {
         return Collections.enumeration(Collections.emptyList());
@@ -242,6 +246,7 @@ public class MockServletContext implements ServletContext, Serializable {
      *
      * @see javax.servlet.ServletContext#getAttributeNames()
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getAttributeNames() {
         return null;

@@ -235,6 +235,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
     private T getEdited() {
         Grid<T> grid = getComponent();
         EditorImpl<T> editor = (EditorImpl<T>) grid.getEditor();
+        @SuppressWarnings("rawtypes")
         Class<? extends EditorImpl> clazz = editor.getClass();
         try {
             Field editedField = clazz.getDeclaredField("edited");

@@ -28,16 +28,22 @@ public class MockVaadinSession extends VaadinSession {
      */
     private static final ThreadLocal<MockVaadinSession> referenceKeeper = new ThreadLocal<>();
     private WrappedSession wrappedSession;
+    private MockHttpSession httpSession;
 
     public MockVaadinSession(VaadinService service,
             MockHttpSession httpSession) {
         super(service);
         wrappedSession = new WrappedHttpSession(httpSession);
+        this.httpSession = httpSession;
     }
 
     @Override
     public WrappedSession getSession() {
         return wrappedSession;
+    }
+
+    public MockHttpSession getHttpSession() {
+        return httpSession;
     }
 
     @Override

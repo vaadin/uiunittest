@@ -35,11 +35,9 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractDateField;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractMultiSelect;
-import com.vaadin.ui.AbstractSingleComponentContainer;
 import com.vaadin.ui.AbstractSingleSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -48,7 +46,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.UI;
@@ -110,6 +107,7 @@ public abstract class AbstractUIUnitTest {
      *            The class of the target view
      * @return A view instance
      */
+    @SuppressWarnings("unchecked")
     public <T> T navigate(String name, Class<T> clazz) {
         assert (name != null);
         assert (clazz != null);
@@ -132,6 +130,7 @@ public abstract class AbstractUIUnitTest {
      *            Component class
      * @return QueryResult of components
      */
+    @SuppressWarnings("unchecked")
     public <T extends ClientConnector> QueryResult<T> $(Class<T> clazz) {
         assert (clazz != null);
         assert (UI.getCurrent() != null) : "UI has not been setup";
@@ -162,12 +161,14 @@ public abstract class AbstractUIUnitTest {
      *            Component class
      * @return QueryResult of components
      */
+    @SuppressWarnings("unchecked")
     public <T extends ClientConnector> QueryResult<T> $(HasComponents container,
             Class<T> clazz) {
         assert (container != null && clazz != null);
         QueryResult<T> result = new QueryResult<>();
         Iterator<Component> iter = container.iterator();
         if (container instanceof Grid) {
+            @SuppressWarnings("rawtypes")
             Grid grid = (Grid) container;
             if (grid.getEditor().getBinder() != null) {
                 List<T> fields = (List<T>) grid.getEditor().getBinder()
@@ -373,6 +374,7 @@ public abstract class AbstractUIUnitTest {
      * @param <T>
      *            Component type
      */
+    @SuppressWarnings("serial")
     public static class QueryResult<T extends ClientConnector>
             extends ArrayList<T> {
         public QueryResult(Collection<T> list) {

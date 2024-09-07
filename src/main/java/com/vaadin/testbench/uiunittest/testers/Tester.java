@@ -21,10 +21,8 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Component.Focusable;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 public abstract class Tester<T extends AbstractComponent> {
