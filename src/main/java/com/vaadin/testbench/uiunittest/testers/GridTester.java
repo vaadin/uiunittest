@@ -28,6 +28,7 @@ import com.vaadin.shared.MouseEventDetails.MouseButton;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.grid.ColumnState;
 import com.vaadin.testbench.uiunittest.Utils;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.components.grid.EditorCancelEvent;
@@ -66,6 +67,11 @@ public class GridTester<T> extends Tester<Grid<T>> {
         ValueProvider<T, ?> vp = getComponent().getColumns().get(column)
                 .getValueProvider();
         Object content = vp.apply(cat);
+        if (content instanceof Component) {
+            Component c = (Component) content;
+            c.setParent(getComponent());
+            c.attach();
+        }
         return content;
     }
 

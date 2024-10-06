@@ -49,6 +49,8 @@ public class GridTestView extends TestView {
             HorizontalLayout layout = new HorizontalLayout();
             TextField field = new TextField();
             field.setValue(item.getValue());
+            field.addFocusListener(e -> Notification.show("TextField focused"));
+            field.addBlurListener(e -> Notification.show("TextField blurred"));
             Button button = new Button("Save");
             button.addClickListener(e -> {
                 item.setValue(field.getValue());

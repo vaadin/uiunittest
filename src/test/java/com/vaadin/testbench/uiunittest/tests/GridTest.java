@@ -226,4 +226,17 @@ public class GridTest extends UIUnitTest {
         Object value = test(grid).cell(1, 0);
         assertFalse(value == null);
     }
+
+    @Test
+    public void focusBlur() {
+        @SuppressWarnings("unchecked")
+        Grid<Bean> grid = $(Grid.class).single();
+        HorizontalLayout layout = (HorizontalLayout) test(grid).cell(1, 0);
+        test($(layout, TextField.class).single()).focus();
+        assertEquals("TextField focused",
+                $(Notification.class).last().getCaption());
+        test($(layout, Button.class).single()).focus();
+        assertEquals("TextField blurred",
+                $(Notification.class).last().getCaption());
+    }
 }
