@@ -334,12 +334,13 @@ public abstract class AbstractUIUnitTest {
         assert (param != null);
         assert (condition != null);
         assert (VaadinSession.getCurrent().hasLock());
+        timeout = timeout * 10;
         VaadinSession.getCurrent().unlock();
         try {
             int i = 0;
             do {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                     i++;
                 } catch (InterruptedException e) {
                 }
