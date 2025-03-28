@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.server.ServiceException;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
 import com.vaadin.testbench.uiunittest.views.PushTestView;
@@ -43,6 +44,8 @@ public class PushTest extends UIUnitTest {
 
     @Test
     public void waitForPush() {
+        assertEquals(PushMode.AUTOMATIC,
+                ui.getPushConfiguration().getPushMode());
         Label label = $(Label.class).id("push-label");
         assertEquals("", label.getValue());
         Button button = $(Button.class).id("spin-button");

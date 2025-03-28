@@ -11,6 +11,7 @@ package com.vaadin.testbench.uiunittest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
@@ -73,6 +74,11 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
         MockServletResponse response = new MockServletResponse();
         vaadinResponse = new VaadinServletResponse(response, service);
         service.setCurrentInstances(vaadinRequest, vaadinResponse);
+        if (ui.getClass().isAnnotationPresent(Push.class)) {
+            Push push = ui.getClass().getAnnotation(Push.class);
+            ui.getPushConfiguration().setPushMode(push.value());
+            ui.getPushConfiguration().setTransport(push.transport());
+        }
         ui.getPage().init(vaadinRequest);
         Class<?> clazz = ui.getClass();
         try {
