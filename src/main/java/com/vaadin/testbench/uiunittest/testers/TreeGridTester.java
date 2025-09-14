@@ -13,6 +13,7 @@ import com.vaadin.event.CollapseEvent;
 import com.vaadin.event.ExpandEvent;
 import com.vaadin.ui.TreeGrid;
 
+@SuppressWarnings("java:S4274")
 public class TreeGridTester<T> extends GridTester<T> {
 
     public TreeGridTester(TreeGrid<T> grid) {

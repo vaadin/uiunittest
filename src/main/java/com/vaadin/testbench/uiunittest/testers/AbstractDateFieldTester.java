@@ -28,6 +28,7 @@ import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.ui.AbstractDateField;
 import com.vaadin.ui.UI;
 
+@SuppressWarnings("java:S3011")
 public class AbstractDateFieldTester<T extends Temporal & TemporalAdjuster & Serializable & Comparable<? super T>, R extends Enum<R>>
         extends AbstractFieldTester<T> {
 
@@ -97,7 +98,9 @@ public class AbstractDateFieldTester<T extends Temporal & TemporalAdjuster & Ser
             rpc.update(value, resolutions);
         } catch (NoSuchFieldException | SecurityException
                 | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "Failed to invoke AbstractDateField's rpc.update reflectively",
+                    e);
         }
     }
 

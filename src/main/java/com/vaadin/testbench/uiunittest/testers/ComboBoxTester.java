@@ -14,6 +14,7 @@ import java.util.List;
 import com.vaadin.shared.ui.combobox.ComboBoxServerRpc;
 import com.vaadin.ui.ComboBox;
 
+@SuppressWarnings("java:S3011")
 public class ComboBoxTester<T> extends AbstractSingleSelectTester<T> {
 
     public ComboBoxTester(ComboBox<T> field) {
@@ -48,7 +49,7 @@ public class ComboBoxTester<T> extends AbstractSingleSelectTester<T> {
                     .fetchItemsWithRange(0, 2);
             if (items.size() == 1) {
                 setValue(items.get(0));
-            } else if (items.size() == 0
+            } else if (items.isEmpty()
                     && comboBox.getNewItemProvider() != null) {
                 rpc.createNewItem(value);
             }

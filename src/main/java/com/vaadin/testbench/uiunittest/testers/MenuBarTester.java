@@ -13,6 +13,7 @@ import java.util.List;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
+@SuppressWarnings("java:S4274")
 public class MenuBarTester extends Tester<MenuBar> {
 
     public MenuBarTester(MenuBar component) {

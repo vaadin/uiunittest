@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -25,6 +24,7 @@ import com.vaadin.testbench.uiunittest.testers.AbstractMultiSelectTester;
 import com.vaadin.testbench.uiunittest.testers.AbstractSingleSelectTester;
 import com.vaadin.testbench.uiunittest.testers.ButtonTester;
 import com.vaadin.testbench.uiunittest.testers.ComboBoxTester;
+import com.vaadin.testbench.uiunittest.testers.ComponentTester;
 import com.vaadin.testbench.uiunittest.testers.GridTester;
 import com.vaadin.testbench.uiunittest.testers.MenuBarTester;
 import com.vaadin.testbench.uiunittest.testers.TabSheetTester;
@@ -35,6 +35,7 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractDateField;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractMultiSelect;
@@ -57,6 +58,7 @@ import com.vaadin.ui.Window;
  * base class for different environments such as CDI and Spring by implementing
  * the methods.
  */
+@SuppressWarnings({ "java:S4274", "java:S100" })
 public abstract class AbstractUIUnitTest {
 
     /**
@@ -135,11 +137,11 @@ public abstract class AbstractUIUnitTest {
         assert (clazz != null);
         assert (UI.getCurrent() != null) : "UI has not been setup";
         if (clazz.isAssignableFrom(Window.class)) {
-            return new QueryResult<T>(
+            return new QueryResult<>(
                     (Collection<T>) UI.getCurrent().getWindows());
         }
         if (clazz.equals(Notification.class)) {
-            return new QueryResult<T>((Collection<T>) UI.getCurrent()
+            return new QueryResult<>((Collection<T>) UI.getCurrent()
                     .getExtensions().stream()
                     .filter(ext -> ext.getClass().equals(Notification.class))
                     .collect(Collectors.toList()));
@@ -315,7 +317,28 @@ public abstract class AbstractUIUnitTest {
     }
 
     /**
-     * Utility mehtod that waits while condition is true. Unlocks the mocked
+     * Perform operations with the component as a user. E.g. if the operation
+     * fires an event as an side effect, it has isUserOriginated = true.
+     *
+     * @param component
+     *            The component
+     * @return Tester for operations
+     */
+    public ComponentTester test(AbstractComponent component) {
+        return new ComponentTester(component);
+    }
+
+    /**
+     * Print the component tree for debugging. This includes all components
+     * within the UI and all windows. Also notifications are printed.
+     * Indentation is used to indicate component hierarchy.
+     */
+    public void printComponentTree() {
+        Utils.printComponentTree();
+    }
+
+    /**
+     * Utility method that waits while condition is true. Unlocks the mocked
      * session and returns lock after wait ends. This is useful when waiting
      * background thread activity to complete and letting ui.access to happen.
      *
@@ -343,6 +366,7 @@ public abstract class AbstractUIUnitTest {
                     Thread.sleep(100);
                     i++;
                 } catch (InterruptedException e) {
+                    // Ignore
                 }
             } while (testWaitCondition(param, condition) && i < timeout);
         } finally {
@@ -378,6 +402,8 @@ public abstract class AbstractUIUnitTest {
     @SuppressWarnings("serial")
     public static class QueryResult<T extends ClientConnector>
             extends ArrayList<T> {
+        private static final String NO_CLASS_MATCHES = "No class matches";
+
         public QueryResult(Collection<T> list) {
             super(list);
         }
@@ -394,17 +420,24 @@ public abstract class AbstractUIUnitTest {
          * @param id
          *            The id as String
          * @return Component instance, can be null
+         * @throws AssertionError
+         *             if more than one component is found with the given id
          */
         public T id(String id) {
-            assert (!isEmpty()) : "No class matches";
-            Optional<T> res = stream()
-                    .filter(c -> ((Component) c).getId() == null ? false
-                            : ((Component) c).getId().equals(id))
-                    .findFirst();
-            if (res.isPresent()) {
-                return res.get();
+            if (isEmpty()) {
+                Utils.printComponentTree();
+                throw new AssertionError(NO_CLASS_MATCHES);
             }
-            return null;
+            List<T> matching = stream()
+                    .filter(c -> ((Component) c).getId() != null
+                            && ((Component) c).getId().equals(id))
+                    .collect(Collectors.toList());
+            if (matching.size() > 1) {
+                Utils.printComponentTree();
+                throw new AssertionError(
+                        "There are more than one component with id " + id);
+            }
+            return matching.isEmpty() ? null : matching.get(0);
         }
 
         /**
@@ -416,7 +449,10 @@ public abstract class AbstractUIUnitTest {
          * @return Result set of components
          */
         public QueryResult<T> styleName(String styleName) {
-            assert (!isEmpty()) : "No class matches";
+            if (isEmpty()) {
+                Utils.printComponentTree();
+                throw new AssertionError(NO_CLASS_MATCHES);
+            }
             return new QueryResult<>(stream()
                     .filter(c -> ((Component) c).getStyleName() == null ? false
                             : ((Component) c).getStyleName()
@@ -433,7 +469,10 @@ public abstract class AbstractUIUnitTest {
          * @return Result set of components
          */
         public QueryResult<T> caption(String caption) {
-            assert (!isEmpty()) : "No class matches";
+            if (isEmpty()) {
+                Utils.printComponentTree();
+                throw new AssertionError(NO_CLASS_MATCHES);
+            }
             return new QueryResult<>(stream()
                     .filter(c -> ((Component) c).getCaption() == null ? false
                             : ((Component) c).getCaption().contains(caption))
@@ -442,6 +481,8 @@ public abstract class AbstractUIUnitTest {
 
         /**
          * Return the first component in the list.
+         * <p>
+         * Note, if you assume there is only one component, use single() method.
          *
          * @return Component, null if the list was empty.
          */
@@ -471,8 +512,13 @@ public abstract class AbstractUIUnitTest {
          * @return Component.
          */
         public T single() {
-            assert (size() != 0) : "There are were no matches";
-            assert (size() == 1) : "There are more than one components";
+            if (isEmpty()) {
+                Utils.printComponentTree();
+                throw new AssertionError("There are were no matches");
+            } else if (size() > 1) {
+                Utils.printComponentTree();
+                throw new AssertionError("There are more than one components");
+            }
             return get(0);
         }
     }

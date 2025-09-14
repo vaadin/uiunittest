@@ -45,6 +45,7 @@ public class GridEditorTest extends UIUnitTest {
 
     @Test
     public void editItem_disabled() {
+        @SuppressWarnings("unchecked")
         Grid<Data> grid = $(Grid.class).single();
 
         $(Button.class).caption("Disable").single().click();
@@ -60,6 +61,7 @@ public class GridEditorTest extends UIUnitTest {
 
     @Test
     public void closed_save() {
+        @SuppressWarnings("unchecked")
         Grid<Data> grid = $(Grid.class).single();
 
         int err = 0;
@@ -73,6 +75,7 @@ public class GridEditorTest extends UIUnitTest {
 
     @Test
     public void closed_cancel() {
+        @SuppressWarnings("unchecked")
         Grid<Data> grid = $(Grid.class).single();
 
         int err = 0;
@@ -86,6 +89,7 @@ public class GridEditorTest extends UIUnitTest {
 
     @Test
     public void editItem_buffered() {
+        @SuppressWarnings("unchecked")
         Grid<Data> grid = $(Grid.class).single();
 
         assertEquals("Data0", test(grid).cell(0, 0));
@@ -111,6 +115,7 @@ public class GridEditorTest extends UIUnitTest {
 
     @Test
     public void editItem_cancel() {
+        @SuppressWarnings("unchecked")
         Grid<Data> grid = $(Grid.class).single();
 
         assertEquals("Data0", test(grid).cell(0, 0));
@@ -136,6 +141,7 @@ public class GridEditorTest extends UIUnitTest {
 
     @Test
     public void editItem_unbuffered() {
+        @SuppressWarnings("unchecked")
         Grid<Data> grid = $(Grid.class).single();
 
         $(Button.class).caption("Unbuffered").single().click();

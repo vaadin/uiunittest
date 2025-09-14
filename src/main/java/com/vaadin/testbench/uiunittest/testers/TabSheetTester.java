@@ -14,6 +14,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 
+@SuppressWarnings("java:S4274")
 public class TabSheetTester extends Tester<TabSheet> {
 
     public TabSheetTester(TabSheet tabSheet) {

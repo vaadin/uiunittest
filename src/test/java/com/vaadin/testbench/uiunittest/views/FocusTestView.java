@@ -12,7 +12,6 @@ import com.vaadin.testbench.uiunittest.TestView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 
 public class FocusTestView extends TestView {

@@ -30,6 +30,7 @@ import com.vaadin.shared.ui.grid.ColumnState;
 import com.vaadin.testbench.uiunittest.Utils;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.HasComponents.ComponentAttachEvent;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.components.grid.EditorCancelEvent;
 import com.vaadin.ui.components.grid.EditorImpl;
@@ -40,7 +41,14 @@ import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.components.grid.SingleSelectionModelImpl;
 
+@SuppressWarnings({ "java:S4274", "java:S3011" })
 public class GridTester<T> extends Tester<Grid<T>> {
+    private static final String GRID_IS_NOT_IN_MULTISELECT_MODE = "Grid is not in multiselect mode";
+    private static final String THE_COLUMN_IS_HIDDEN = "The column is hidden";
+    private static final String EDITOR_IS_DISABLED = "Editor is disabled";
+    private static final String EDITOR_IS_CLOSED = "Editor is closed";
+    private static final String ROW_OUT_OF_BOUNDS = "Row out of bounds";
+    private static final String INTERACTABLE_ERROR = "Can't interact with disabled or invisible Grid";
 
     public GridTester(Grid<T> grid) {
         super(grid);
@@ -60,17 +68,33 @@ public class GridTester<T> extends Tester<Grid<T>> {
     public Object cell(int column, int row) {
         assert (column > -1 && column < getComponent().getColumns()
                 .size()) : "Column out of bounds";
-        assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
         assert (!getComponent().getColumns().get(column)
-                .isHidden()) : "The column is hidden";
-        T cat = (T) item(row);
+                .isHidden()) : THE_COLUMN_IS_HIDDEN;
+        T cat = item(row);
         ValueProvider<T, ?> vp = getComponent().getColumns().get(column)
                 .getValueProvider();
         Object content = vp.apply(cat);
         if (content instanceof Component) {
             Component c = (Component) content;
-            c.setParent(getComponent());
-            c.attach();
+            Grid<T> grid = getComponent();
+            assert grid != null : "Grid is null";
+            // Call grid.addExtensionComponent(c) with reflection
+            try {
+                Method addExtensionComponentMethod = Grid.class
+                        .getDeclaredMethod("addExtensionComponent",
+                                Component.class);
+                addExtensionComponentMethod.setAccessible(true);
+                addExtensionComponentMethod.invoke(grid, c);
+            } catch (NoSuchMethodException | SecurityException
+                    | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException e) {
+                throw new RuntimeException(
+                        "Failed to invoke Grid.addExtensionComponent reflectively",
+                        e);
+            }
+            fireSimulatedEvent(new ComponentAttachEvent(grid, c));
+            grid.getUI().getConnectorTracker().markDirty(grid);
         }
         return content;
     }
@@ -83,7 +107,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      * @return Description String
      */
     public String description(int row) {
-        assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
         return getComponent().getDescriptionGenerator().apply(item(row));
     }
 
@@ -95,7 +119,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      * @return Style name String
      */
     public String styleName(int row) {
-        assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
         return getComponent().getStyleGenerator().apply(item(row));
     }
 
@@ -107,7 +131,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      * @return The item
      */
     public T item(int row) {
-        assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
         return getComponent().getDataCommunicator().fetchItemsWithRange(row, 1)
                 .get(0);
     }
@@ -132,16 +156,16 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            Row index
      */
     public void click(int column, int row) {
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
         assert (column > -1 && column < getComponent().getColumns()
                 .size()) : "Column out of bounds";
-        assert (row > -1 && row < size()) : "Row out of bounds";
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
         assert (!getComponent().getColumns().get(column)
-                .isHidden()) : "The column is hidden";
+                .isHidden()) : THE_COLUMN_IS_HIDDEN;
         T item = item(row);
         MouseEventDetails details = new MouseEventDetails();
         details.setButton(MouseButton.LEFT);
-        Grid.ItemClick<T> event = new Grid.ItemClick<T>(getComponent(),
+        Grid.ItemClick<T> event = new Grid.ItemClick<>(getComponent(),
                 getComponent().getColumns().get(column), item, details, row);
         getComponent().focus();
         fireSimulatedEvent(event);
@@ -163,9 +187,9 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            The row index
      */
     public void clickToSelect(int row) {
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
-        assert ((getComponent()
-                .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
+        assert (getComponent()
+                .getSelectionModel() instanceof MultiSelectionModel) : GRID_IS_NOT_IN_MULTISELECT_MODE;
         T item = item(row);
         getComponent().focus();
         clickToSelect(item);
@@ -180,9 +204,9 @@ public class GridTester<T> extends Tester<Grid<T>> {
      */
     @SuppressWarnings("unchecked")
     public void clickToSelect(T item) {
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
-        assert ((getComponent()
-                .getSelectionModel() instanceof MultiSelectionModel)) : "Grid is not in multiselect mode";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
+        assert (getComponent()
+                .getSelectionModel() instanceof MultiSelectionModel) : GRID_IS_NOT_IN_MULTISELECT_MODE;
         getComponent().focus();
         if (getComponent().getSelectedItems().contains(item)) {
             deselect(Utils.setOfItems(item));
@@ -209,8 +233,8 @@ public class GridTester<T> extends Tester<Grid<T>> {
      */
     public void edit(int row) {
         Grid<T> grid = getComponent();
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
-        assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
+        assert (getComponent().getEditor().isEnabled()) : EDITOR_IS_DISABLED;
         T editing = item(row);
         if (grid.getEditor().isBuffered()) {
             grid.getEditor().editRow(row);
@@ -283,9 +307,9 @@ public class GridTester<T> extends Tester<Grid<T>> {
      */
     public void save() {
         Grid<T> grid = getComponent();
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
-        assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
-        assert (editorOpen()) : "Editor is closed";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
+        assert (getComponent().getEditor().isEnabled()) : EDITOR_IS_DISABLED;
+        assert (editorOpen()) : EDITOR_IS_CLOSED;
         T editing = getEdited();
         if (grid.getEditor().isBuffered()) {
             try {
@@ -308,9 +332,10 @@ public class GridTester<T> extends Tester<Grid<T>> {
      */
     public void cancel() {
         Grid<T> grid = getComponent();
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
-        assert (getComponent().getEditor().isEnabled()) : "Editor is disabled";
-        assert (editorOpen()) : "Editor is closed";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
+        assert (getComponent().getEditor().isEnabled()) : EDITOR_IS_DISABLED;
+        assert (editorOpen()) : EDITOR_IS_CLOSED;
+        assert (editorOpen()) : EDITOR_IS_CLOSED;
         T editing = getEdited();
         fireEditorEvent(new EditorCancelEvent<T>(grid.getEditor(), editing));
         setEdited(null);
@@ -324,7 +349,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            int
      */
     public void toggleColumnVisibility(int columnIndex) {
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
         Grid<T> grid = getComponent();
         assert (columnIndex < grid.getColumns().size()
                 && columnIndex > -1) : "Column index out of bounds";
@@ -354,7 +379,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            The caption as string
      */
     public void toggleColumnVisibility(String caption) {
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
         Grid<T> grid = getComponent();
         for (int i = 0; i < grid.getColumns().size(); i++) {
             Column<T, ?> column = grid.getColumns().get(i);
@@ -377,12 +402,12 @@ public class GridTester<T> extends Tester<Grid<T>> {
      *            Index of the column including hidden columns.
      */
     public void toggleColumnSorting(int columnIndex) {
-        assert (isInteractable()) : "Can't interact with disabled or invisible Grid";
+        assert (isInteractable()) : INTERACTABLE_ERROR;
         Grid<T> grid = getComponent();
         assert (columnIndex < grid.getColumns().size()
                 && columnIndex > -1) : "Column index out of bounds";
         assert (!grid.getColumns().get(columnIndex)
-                .isHidden()) : "The column is hidden";
+                .isHidden()) : THE_COLUMN_IS_HIDDEN;
         Column<T, ?> column = grid.getColumns().get(columnIndex);
         assert column
                 .isSortable() : "Column sorting is not enabled for this column";
@@ -504,6 +529,7 @@ public class GridTester<T> extends Tester<Grid<T>> {
     }
 
     @Override
+    @SuppressWarnings("java:S1185")
     protected Grid<T> getComponent() {
         return super.getComponent();
     }

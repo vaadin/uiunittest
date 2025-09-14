@@ -1,5 +1,10 @@
 package com.vaadin.testbench.uiunittest.views;
 
+import java.lang.reflect.Modifier;
+import java.security.Key;
+
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.testbench.uiunittest.TestView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -20,6 +25,7 @@ public class ButtonTestView extends TestView {
         Button normal = new Button("Normal");
         normal.addClickListener(e -> Notification.show("Clicked"));
         normal.setId("normal");
+        normal.setClickShortcut(KeyCode.ENTER);
         Button focus = new Button("Focus");
         focus.addFocusListener(e -> Notification.show("Focused"));
         focus.setId("focus");
@@ -31,7 +37,11 @@ public class ButtonTestView extends TestView {
         disableOnClick.addClickListener(e -> Notification.show("Clicked"));
         disableOnClick.setDisableOnClick(true);
         disableOnClick.setId("disableOnClick");
-        layout.addComponents(normal, focus, hidden, disableOnClick);
+        Button save = new Button("Save");
+        save.addClickListener(e -> Notification.show("Saved"));
+        save.setId("save");
+        save.setClickShortcut(KeyCode.S, ModifierKey.CTRL);
+        layout.addComponents(normal, focus, hidden, disableOnClick, save);
         return layout;
     }
 

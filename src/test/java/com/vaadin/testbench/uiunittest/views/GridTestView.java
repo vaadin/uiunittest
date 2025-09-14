@@ -8,7 +8,6 @@
  */
 package com.vaadin.testbench.uiunittest.views;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -115,6 +114,7 @@ public class GridTestView extends TestView {
         return content;
     }
 
+    @Override
     public List<Bean> getData() {
         return data;
     }

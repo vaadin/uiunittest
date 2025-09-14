@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component.Focusable;
 
+@SuppressWarnings("java:S3011")
 public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
         implements HasValue<T> {
 
@@ -37,9 +38,11 @@ public class AbstractFieldTester<T> extends Tester<AbstractField<T>>
             setValueMethod.setAccessible(true);
             setValueMethod.invoke(getComponent(), value, true);
         } catch (NoSuchMethodException | SecurityException
-                | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            e.printStackTrace();
+                | IllegalAccessException | IllegalArgumentException e) {
+            throw new RuntimeException(
+                    "Failed to invoke AbstractField.setValue reflectively", e);
+        } catch (InvocationTargetException e) {
+            // Ignore
         }
     }
 

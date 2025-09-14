@@ -7,6 +7,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.server.ServiceException;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
@@ -35,6 +37,38 @@ public class ButtonTest extends UIUnitTest {
     public void buttonClick() {
         test($(Button.class).id("normal")).click();
         assertEquals("Clicked", $(Notification.class).last().getCaption());
+    }
+
+    @Test
+    public void buttonShortcut() {
+        test($(Button.class).id("normal")).shortcut(KeyCode.ENTER);
+        assertEquals("Clicked", $(Notification.class).last().getCaption());
+    }
+
+    @Test
+    public void buttonShortcutNotTriggeredWithWrongKey() {
+        test($(Button.class).id("normal")).shortcut(KeyCode.ESCAPE);
+        assertEquals(null, $(Notification.class).last());
+    }
+
+    @Test
+    public void buttonShortcutWithModifier() {
+        test($(Button.class).id("save"))
+                .shortcut(KeyCode.S, ModifierKey.CTRL);
+        assertEquals("Saved", $(Notification.class).last().getCaption());
+    }
+
+    @Test
+    public void buttonShortcutWithoutModifierDoesNotFire() {
+        test($(Button.class).id("save"))
+                .shortcut(KeyCode.S);
+        assertEquals(null, $(Notification.class).last());
+    }
+    @Test
+    public void buttonShortcutWithWrongModifierDoesNotFire() {
+        test($(Button.class).id("save"))
+                .shortcut(KeyCode.S, ModifierKey.ALT);
+        assertEquals(null, $(Notification.class).last());
     }
 
     @Test

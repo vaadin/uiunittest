@@ -11,8 +11,6 @@ package com.vaadin.testbench.uiunittest.tests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Set;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +18,6 @@ import org.junit.Test;
 import com.vaadin.server.ServiceException;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
-import com.vaadin.testbench.uiunittest.Utils;
 import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.ui.Notification;
@@ -43,6 +40,7 @@ public class CheckBoxGroupTest extends UIUnitTest {
         tearDown();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void basic() {
         test($(CheckBoxGroup.class).first()).clickItem("One");

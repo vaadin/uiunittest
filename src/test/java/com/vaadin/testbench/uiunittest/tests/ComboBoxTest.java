@@ -39,18 +39,21 @@ public class ComboBoxTest extends UIUnitTest {
         tearDown();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void basic() {
         test($(ComboBox.class).first()).clickItem("Two");
         assertEquals("Two", $(Notification.class).last().getCaption());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void filter() {
         test($(ComboBox.class).first()).setInput("Three");
         assertEquals("Three", $(Notification.class).last().getCaption());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void newValue() {
         test($(ComboBox.class).first()).setInput("Four");

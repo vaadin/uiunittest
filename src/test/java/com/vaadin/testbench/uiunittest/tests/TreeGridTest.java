@@ -40,6 +40,7 @@ public class TreeGridTest extends UIUnitTest {
         tearDown();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void expandCollapse() {
         TreeGrid<Department> grid = $(TreeGrid.class).first();
@@ -57,6 +58,7 @@ public class TreeGridTest extends UIUnitTest {
 
     @Test
     public void gridDisabled() {
+        @SuppressWarnings("unchecked")
         TreeGrid<Department> grid = $(TreeGrid.class).first();
 
         test($(Button.class).caption("Disable").first()).click();

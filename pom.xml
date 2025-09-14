@@ -5,7 +5,7 @@
 
     <groupId>com.vaadin.testbench</groupId>
     <artifactId>vaadin-uiunittest</artifactId>
-    <version>5.0.1</version>
+    <version>5.1.0</version>
     <name>UIUnitTest</name>
     <description>UIUnitTest for Vaadin 8</description>
 
@@ -91,7 +91,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>license-checker</artifactId>
-            <version>1.13.3</version>
+            <version>1.13.5</version>
         </dependency>
     	<dependency>
     		<groupId>com.vaadin</groupId>
@@ -119,6 +119,24 @@
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.3.6.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.1-b08</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

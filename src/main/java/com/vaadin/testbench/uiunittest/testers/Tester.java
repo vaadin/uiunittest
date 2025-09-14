@@ -12,12 +12,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import com.vaadin.event.Action;
+import com.vaadin.event.ActionManager;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.AbstractClientConnector;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractComponent;
@@ -25,11 +30,12 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Component.Focusable;
 import com.vaadin.ui.UI;
 
+@SuppressWarnings("java:S3011")
 public abstract class Tester<T extends AbstractComponent> {
 
     private T component;
 
-    public Tester(T component) {
+    protected Tester(T component) {
         this.component = component;
     }
 
@@ -40,8 +46,9 @@ public abstract class Tester<T extends AbstractComponent> {
      * @return boolean value
      */
     public boolean isInteractable() {
-        VaadinSession.getCurrent().unlock();
         try {
+            // Temporary unlock allows UI#access tasks to be run
+            VaadinSession.getCurrent().unlock();
         } finally {
             VaadinSession.getCurrent().lock();
         }
@@ -52,31 +59,31 @@ public abstract class Tester<T extends AbstractComponent> {
     // However if component is in disabled container, it will be disabled also
     // in the Browser DOM. Hence need to check parents.
     private boolean isEnabled() {
-        Component component = getComponent();
-        if (!component.isEnabled()) {
+        Component currentComponent = getComponent();
+        if (!currentComponent.isEnabled()) {
             return false;
         }
-        while (component.getParent() != null) {
-            component = component.getParent();
-            if (!component.isEnabled()) {
+        while (currentComponent.getParent() != null) {
+            currentComponent = currentComponent.getParent();
+            if (!currentComponent.isEnabled()) {
                 return false;
             }
         }
-        return component.isEnabled();
+        return currentComponent.isEnabled();
     }
 
     private boolean isVisible() {
-        Component component = getComponent();
-        if (!component.isVisible()) {
+        Component currentComponent = getComponent();
+        if (!currentComponent.isVisible()) {
             return false;
         }
-        while (component.getParent() != null) {
-            component = component.getParent();
-            if (!component.isVisible()) {
+        while (currentComponent.getParent() != null) {
+            currentComponent = currentComponent.getParent();
+            if (!currentComponent.isVisible()) {
                 return false;
             }
         }
-        return component.isVisible();
+        return currentComponent.isVisible();
     }
 
     /**
@@ -103,7 +110,7 @@ public abstract class Tester<T extends AbstractComponent> {
         Document doc = Jsoup.parse(
                 getComponent().getComponentError().getFormattedHtmlMessage());
         doc.outputSettings().prettyPrint(false);
-        return isInvalid() ? doc.text().toString() : null;
+        return isInvalid() ? doc.text() : null;
     }
 
     /**
@@ -146,7 +153,7 @@ public abstract class Tester<T extends AbstractComponent> {
     public void focus() {
         assert (isInteractable()) : "Cannot focus non-interactable component";
         if (getComponent() instanceof Focusable) {
-            UI ui = UI.getCurrent(); // getComponent().getUI();
+            UI ui = UI.getCurrent();
             Focusable focused = null;
             Focusable focusable = (Focusable) getComponent();
             Class<?> clazz = ui.getClass();
@@ -180,7 +187,7 @@ public abstract class Tester<T extends AbstractComponent> {
      */
     public boolean isFocused() {
         if (getComponent() instanceof Focusable) {
-            UI ui = UI.getCurrent(); // getComponent().getUI();
+            UI ui = UI.getCurrent();
             Focusable focused = null;
             Class<?> clazz = ui.getClass();
             while (!clazz.equals(UI.class)) {
@@ -197,6 +204,96 @@ public abstract class Tester<T extends AbstractComponent> {
             return focused == getComponent();
         }
         return false;
+    }
+
+    /**
+     * Trigger keyshortcut listener hooked to the component.
+     *
+     * @param key
+     *            the key code of the shortcut, Use e.g.
+     *            {@link com.vaadin.event.ShortcutAction.KeyCode}
+     */
+    public void shortcut(int key) {
+        assert (isInteractable()) : "Can't send shortcut to non-interactable component";
+        UI ui = UI.getCurrent();
+        if (ui == null) {
+            throw new IllegalStateException(
+                    "There is no current UI to send the shortcut event to");
+        }
+        ActionManager am = getActionManager();
+        Action[] actions = am.getActions(getComponent(), getComponent());
+        for (Action action : actions) {
+            if (action instanceof ShortcutAction) {
+                ShortcutAction shortcutAction = (ShortcutAction) action;
+                if (shortcutAction.getKeyCode() == key
+                        && shortcutAction.getModifiers().length == 0) {
+                    am.handleAction(shortcutAction, getComponent(),
+                            getComponent());
+                }
+            }
+        }
+    }
+
+    /**
+     * Trigger keyshortcut listener hooked to the component.
+     *
+     * @param key
+     *            the key code of the shortcut, Use e.g.
+     *            {@link com.vaadin.event.ShortcutAction.KeyCode}
+     * @param modifierKeys
+     *            the modifier keys required for the shortcut, Use e.g.
+     *            {@link com.vaadin.event.ShortcutAction.ModifierKey}
+     */
+    public void shortcut(int key, int... modifierKeys) {
+        assert (isInteractable()) : "Can't send shortcut to non-interactable component";
+        UI ui = UI.getCurrent();
+        if (ui == null) {
+            throw new IllegalStateException(
+                    "There is no current UI to send the shortcut event to");
+        }
+        ActionManager am = getActionManager();
+        Action[] actions = am.getActions(getComponent(), getComponent());
+        for (Action action : actions) {
+            if (action instanceof ShortcutAction) {
+                ShortcutAction shortcutAction = (ShortcutAction) action;
+                if (shortcutAction.getKeyCode() == key) {
+                    int[] required = shortcutAction.getModifiers();
+                    Set<Integer> requiredSet = new HashSet<>();
+                    for (int mod : required) {
+                        requiredSet.add(mod);
+                    }
+                    Set<Integer> modifierKeysSet = new HashSet<>();
+                    for (int mod : modifierKeys) {
+                        modifierKeysSet.add(mod);
+                    }
+                    if (modifierKeysSet.containsAll(requiredSet)) {
+                        am.handleAction(shortcutAction, getComponent(),
+                                getComponent());
+                    }
+                }
+            }
+        }
+    }
+
+    private ActionManager getActionManager() {
+        // Get action manager using reflection
+        ActionManager am = null;
+        Class<?> clazz = getComponent().getClass();
+        while (!clazz.equals(AbstractComponent.class)) {
+            clazz = clazz.getSuperclass();
+        }
+        try {
+            Method getActionManagerMethod = clazz
+                    .getDeclaredMethod("getActionManager");
+            getActionManagerMethod.setAccessible(true);
+            am = (ActionManager) getActionManagerMethod.invoke(getComponent());
+        } catch (NoSuchMethodException | SecurityException
+                | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
+            throw new RuntimeException(
+                    "Failed to get ActionManager from component", e);
+        }
+        return am;
     }
 
     protected T getComponent() {

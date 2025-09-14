@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import com.vaadin.ui.AbstractSingleSelect;
 import com.vaadin.ui.Component.Focusable;
 
+@SuppressWarnings("java:S3011")
 public class AbstractSingleSelectTester<T>
         extends Tester<AbstractSingleSelect<T>> {
 
@@ -47,9 +48,12 @@ public class AbstractSingleSelectTester<T>
             setSelectedItemMethod.setAccessible(true);
             setSelectedItemMethod.invoke(getComponent(), value, true);
         } catch (NoSuchMethodException | SecurityException
-                | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            e.printStackTrace();
+                | IllegalAccessException | IllegalArgumentException e) {
+            throw new RuntimeException(
+                    "Failed to invoke AbstractSingleSelect.setSelectedItem reflectively",
+                    e);
+        } catch (InvocationTargetException e) {
+            // Ignore
         }
     }
 

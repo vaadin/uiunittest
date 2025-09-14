@@ -9,9 +9,9 @@
 package com.vaadin.testbench.uiunittest.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,15 +27,10 @@ import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.VaadinServletResponse;
-import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.testbench.uiunittest.DefaultView;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
-import com.vaadin.testbench.uiunittest.mocks.MockServletRequest;
-import com.vaadin.testbench.uiunittest.mocks.MockServletResponse;
 import com.vaadin.testbench.uiunittest.views.TreeGridTestView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -65,9 +60,23 @@ public class DefaultTest extends UIUnitTest {
     @Test
     public void defaultTest() {
         assertEquals("Menu", $(Label.class).id("menu").getValue());
-        assertTrue($(TreeGrid.class).first() == null);
+        assertNull($(TreeGrid.class).first());
         test($(Button.class).caption(TreeGridTestView.NAME).first()).click();
-        assertTrue($(TreeGrid.class).first() != null);
+        assertNotNull($(TreeGrid.class).first());
+    }
+
+    @Test
+    public void uiIdIsSet() {
+        assertNotEquals(-1, ui.getUIId());
+    }
+
+    @Test
+    public void sessionHasUI() {
+        VaadinSession session = ui.getSession();
+        assertNotNull(session);
+        assertEquals(1, session.getUIs().size());
+        UI uiInSessionUi = session.getUIs().iterator().next();
+        assertEquals(ui, uiInSessionUi);
     }
 
     @Test
@@ -81,7 +90,7 @@ public class DefaultTest extends UIUnitTest {
 
             test($(Button.class).caption(TreeGridTestView.NAME).first())
                     .click();
-            assertTrue($(TreeGrid.class).first() != null);
+            assertNotNull($(TreeGrid.class).first());
             navigate("", DefaultView.class);
             assertEquals("Menu", $(Label.class).id("menu").getValue());
         }
@@ -99,5 +108,6 @@ public class DefaultTest extends UIUnitTest {
         ByteArrayInputStream bis = new ByteArrayInputStream(a);
         ObjectInputStream in = new ObjectInputStream(bis);
         VaadinSession v = (VaadinSession) in.readObject();
+        assertNotNull(v);
     }
 }

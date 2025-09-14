@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.AbstractMultiSelect;
 import com.vaadin.ui.Component.Focusable;
 
+@SuppressWarnings("java:S3011")
 public class AbstractMultiSelectTester<T>
         extends Tester<AbstractMultiSelect<T>> {
 
@@ -64,9 +65,12 @@ public class AbstractMultiSelectTester<T>
             updateSelectionMethod.invoke(field, copy,
                     new LinkedHashSet<>(field.getSelectedItems()), true);
         } catch (NoSuchMethodException | SecurityException
-                | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            e.printStackTrace();
+                | IllegalAccessException | IllegalArgumentException e) {
+            throw new RuntimeException(
+                    "Failed to invoke AbstractMultiSelect.updateSelection reflectively",
+                    e);
+        } catch (InvocationTargetException e) {
+            // Ignore
         }
     }
 

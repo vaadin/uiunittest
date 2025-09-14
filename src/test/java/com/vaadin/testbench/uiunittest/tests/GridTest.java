@@ -10,6 +10,7 @@ package com.vaadin.testbench.uiunittest.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -212,7 +213,7 @@ public class GridTest extends UIUnitTest {
 
         int err = 0;
         try {
-            Object value = test(grid).cell(1, 0);
+            test(grid).cell(1, 0);
         } catch (AssertionError e) {
             err++;
         }
@@ -224,7 +225,7 @@ public class GridTest extends UIUnitTest {
         assertFalse(grid.getColumns().get(1).isHidden());
 
         Object value = test(grid).cell(1, 0);
-        assertFalse(value == null);
+        assertNotNull(value);
     }
 
     @Test
