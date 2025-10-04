@@ -42,20 +42,16 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
     private VaadinServletRequest vaadinRequest;
     private VaadinServletResponse vaadinResponse;
     public static final AtomicInteger mockId = new AtomicInteger(1);
+    private MockHttpSession session;
 
     @Override
     public UI mockVaadin() throws ServiceException {
-        MockHttpSession session = new MockHttpSession(new MockServletContext());
-        VaadinServletService service = getService();
-        MockVaadinSession vaadinSession = new MockVaadinSession(service,
-                session);
-        vaadinSession.lock();
-        VaadinSession.setCurrent(vaadinSession);
+        MockVaadinSession vaadinSession = getVaadinSession();
         MockUI ui = new MockUI(vaadinSession);
         setUiToSession(vaadinSession, ui);
-        MockServletRequest request = new MockServletRequest(session);
-        VaadinServletRequest vaadinRequest = new VaadinServletRequest(request,
-                (VaadinServletService) vaadinSession.getService());
+        MockVaadinService service = (MockVaadinService) vaadinSession
+                .getService();
+        vaadinRequest = getVaadinRequest();
         MockServletResponse response = new MockServletResponse();
         service.setCurrentInstances(vaadinRequest,
                 new VaadinServletResponse(response, service));
@@ -83,17 +79,12 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
     @Override
     public void mockVaadin(UI ui) throws ServiceException {
         assert (ui != null) : UI_CAN_T_BE_NULL;
-        MockHttpSession session = new MockHttpSession(new MockServletContext());
-        VaadinServletService service = getService();
-        MockVaadinSession vaadinSession = new MockVaadinSession(service,
-                session);
-        vaadinSession.lock();
-        VaadinSession.setCurrent(vaadinSession);
+        MockVaadinSession vaadinSession = getVaadinSession();
         ui.setSession(vaadinSession);
         setUiToSession(vaadinSession, ui);
-        MockServletRequest request = new MockServletRequest(session);
-        vaadinRequest = new VaadinServletRequest(request,
-                (VaadinServletService) vaadinSession.getService());
+        MockVaadinService service = (MockVaadinService) vaadinSession
+                .getService();
+        vaadinRequest = getVaadinRequest();
         MockServletResponse response = new MockServletResponse();
         vaadinResponse = new VaadinServletResponse(response, service);
         service.setCurrentInstances(vaadinRequest, vaadinResponse);
@@ -116,21 +107,83 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
         }
     }
 
-    protected VaadinServletService getService() throws ServiceException {
-        return new MockVaadinService();
-    }
-
     @Override
     public void tearDown() {
-        VaadinSession session = VaadinSession.getCurrent();
+        VaadinSession vaadinSession = VaadinSession.getCurrent();
         UI ui = UI.getCurrent();
         ui.detach();
         ui.close();
-        session.close();
+        vaadinSession.close();
         VaadinService.getCurrent().setCurrentInstances(null, null);
         VaadinService.setCurrent(null);
         VaadinSession.setCurrent(null);
         UI.setCurrent(null);
+        this.session = null;
     }
 
+    /**
+     * Get the mock VaadinService or create a new one if it doesn't exist.
+     *
+     * @return the MockVaadinService
+     * @throws ServiceException
+     */
+    protected MockVaadinService getService() throws ServiceException {
+        if (VaadinService.getCurrent() == null) {
+            MockVaadinService service = new MockVaadinService();
+            VaadinService.setCurrent(service);
+            return service;
+
+        }
+        return (MockVaadinService) VaadinService.getCurrent();
+    }
+
+    /**
+     * Get the mock HTTP session or create a new one if it doesn't exist.
+     * <p>
+     * This can be called before calling mockVaadin() to customize the session,
+     * for example to set attributes.
+     *
+     * @return the MockHttpSession
+     */
+    protected MockHttpSession getSession() {
+        if (session == null) {
+            session = new MockHttpSession(new MockServletContext());
+        }
+        return session;
+    }
+
+    /**
+     * Get the mock VaadinSession or create a new one if it doesn't exist.
+     * <p>
+     * This can be called before calling mockVaadin() to customize the session,
+     * for example to set attributes.
+     *
+     * @return the MockVaadinSession
+     * @throws ServiceException
+     */
+    protected MockVaadinSession getVaadinSession() throws ServiceException {
+        if (VaadinSession.getCurrent() == null) {
+            MockVaadinSession vaadinSession = new MockVaadinSession(
+                    getService(), getSession());
+            vaadinSession.lock();
+            VaadinSession.setCurrent(vaadinSession);
+            return vaadinSession;
+        }
+        return (MockVaadinSession) VaadinSession.getCurrent();
+    }
+
+    /**
+     * Create a VaadinServletRequest for the mocked HTTP session and service.
+     * <p>
+     * This can be used as utility to create a VaadinRequest for testing methods
+     * that need it.
+     *
+     * @throws ServiceException
+     */
+    protected VaadinServletRequest getVaadinRequest() throws ServiceException {
+        MockServletRequest request = new MockServletRequest(getSession());
+        vaadinRequest = new VaadinServletRequest(request,
+                (VaadinServletService) getVaadinSession().getService());
+        return vaadinRequest;
+    }
 }
