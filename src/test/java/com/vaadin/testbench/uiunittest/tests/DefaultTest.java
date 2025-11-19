@@ -13,12 +13,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +23,7 @@ import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.testbench.uiunittest.DefaultView;
+import com.vaadin.testbench.uiunittest.SerializationDebugUtil;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
 import com.vaadin.testbench.uiunittest.views.TreeGridTestView;
@@ -97,17 +92,10 @@ public class DefaultTest extends UIUnitTest {
     }
 
     @Test
-    public void isSerializable() throws IOException, ClassNotFoundException {
-        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(bs);
-        os.writeObject(ui.getSession());
-        os.flush();
-        os.close();
-
-        byte[] a = bs.toByteArray();
-        ByteArrayInputStream bis = new ByteArrayInputStream(a);
-        ObjectInputStream in = new ObjectInputStream(bis);
-        VaadinSession v = (VaadinSession) in.readObject();
-        assertNotNull(v);
+    public void isSerializable()  {
+        SerializationDebugUtil.assertSerializable(ui.getSession());
+        DefaultView view = navigate("", DefaultView.class);
+        SerializationDebugUtil.assertSerializable(ui);
+        SerializationDebugUtil.assertSerializable(view);
     }
 }

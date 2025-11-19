@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.vaadin.server.ServiceException;
+import com.vaadin.testbench.uiunittest.SerializationDebugUtil;
 import com.vaadin.testbench.uiunittest.TestUI;
 import com.vaadin.testbench.uiunittest.UIUnitTest;
 import com.vaadin.testbench.uiunittest.Utils;
@@ -239,5 +240,20 @@ public class GridTest extends UIUnitTest {
         test($(layout, Button.class).single()).focus();
         assertEquals("TextField blurred",
                 $(Notification.class).last().getCaption());
+    }
+
+    @Test
+    public void isSerializable() {
+        StringBuilder report = new StringBuilder();
+        try {
+            SerializationDebugUtil.assertSerializable(view, report);
+        } catch (AssertionError e) {
+            String rep = report.toString();
+            System.out.println(rep);
+            assertTrue(rep.contains("---- Serialization Debug Report ----"));
+            assertTrue(rep.contains("Root type: com.vaadin.testbench.uiunittest.views.GridTestView"));
+            assertTrue(rep.contains("GridTestView$Bean"));
+            assertTrue(rep.contains("- root.bean (com.vaadin.testbench.uiunittest.views.GridTestView$Bean)"));
+        }
     }
 }

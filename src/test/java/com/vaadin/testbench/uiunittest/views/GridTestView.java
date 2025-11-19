@@ -27,6 +27,7 @@ import com.vaadin.ui.Grid.SelectionMode;
 public class GridTestView extends TestView {
 
     public static final String NAME = "grid";
+    private Bean bean = new Bean(0, "Value 0");
 
     @Override
     public String getName() {
