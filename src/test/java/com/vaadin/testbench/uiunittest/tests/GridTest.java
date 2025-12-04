@@ -118,6 +118,24 @@ public class GridTest extends UIUnitTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void gridCellDescriptions() {
+        Grid<Bean> grid = $(Grid.class).single();
+        for (int i = 0; i < 10; i++) {
+            Bean item = view.getData().get(i);
+            assertEquals("Edit item: " + item.getId(),
+                    test(grid).description(1, i));
+        }
+    }
+
+    @Test(expected = AssertionError.class)
+    @SuppressWarnings("unchecked")
+    public void gridCellDescriptionNotAvailable() {
+        Grid<Bean> grid = $(Grid.class).single();
+        test(grid).description(0, 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void gridValues() {
         Grid<Bean> grid = $(Grid.class).single();
         for (int i = 0; i < 10; i++) {
@@ -251,9 +269,11 @@ public class GridTest extends UIUnitTest {
             String rep = report.toString();
             System.out.println(rep);
             assertTrue(rep.contains("---- Serialization Debug Report ----"));
-            assertTrue(rep.contains("Root type: com.vaadin.testbench.uiunittest.views.GridTestView"));
+            assertTrue(rep.contains(
+                    "Root type: com.vaadin.testbench.uiunittest.views.GridTestView"));
             assertTrue(rep.contains("GridTestView$Bean"));
-            assertTrue(rep.contains("- root.bean (com.vaadin.testbench.uiunittest.views.GridTestView$Bean)"));
+            assertTrue(rep.contains(
+                    "- root.bean (com.vaadin.testbench.uiunittest.views.GridTestView$Bean)"));
         }
     }
 }

@@ -108,7 +108,29 @@ public class GridTester<T> extends Tester<Grid<T>> {
      */
     public String description(int row) {
         assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
+        assert getComponent()
+                .getDescriptionGenerator() != null : "No description generator set for the row";
         return getComponent().getDescriptionGenerator().apply(item(row));
+    }
+
+    /**
+     * Return the description (aka tooltip) for the cell.
+     *
+     * @param column
+     *            Column index including hidden columns
+     * @param row
+     *            The row index, base 0
+     * @return Description String
+     */
+    public String description(int column, int row) {
+        assert (column > -1 && column < getComponent().getColumns()
+                .size()) : "Column out of bounds";
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
+        Column<T, ?> col = getComponent().getColumns().get(column);
+        assert !col.isHidden() : THE_COLUMN_IS_HIDDEN;
+        assert col
+                .getDescriptionGenerator() != null : "No description generator set for the column";
+        return col.getDescriptionGenerator().apply(item(row));
     }
 
     /**

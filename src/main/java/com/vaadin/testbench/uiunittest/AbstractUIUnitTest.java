@@ -113,6 +113,7 @@ public abstract class AbstractUIUnitTest {
     public <T> T navigate(String name, Class<T> clazz) {
         assert (name != null);
         assert (clazz != null);
+        assert (UI.getCurrent() != null) : "UI has not been setup";
         Navigator nav = UI.getCurrent().getNavigator();
         assert (nav != null) : "Navigator does not exists";
         nav.navigateTo(name);

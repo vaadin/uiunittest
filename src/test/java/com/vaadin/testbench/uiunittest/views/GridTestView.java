@@ -58,7 +58,8 @@ public class GridTestView extends TestView {
             });
             layout.addComponents(field, button);
             return layout;
-        }).setCaption("VALUE").setHidable(true).setSortable(false);
+        }).setCaption("VALUE").setHidable(true).setSortable(false)
+                .setDescriptionGenerator(item -> "Edit item: " + item.getId());
 
         grid.setItems(data);
         grid.setSelectionMode(SelectionMode.NONE);

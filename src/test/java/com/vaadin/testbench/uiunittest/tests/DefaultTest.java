@@ -97,5 +97,6 @@ public class DefaultTest extends UIUnitTest {
         DefaultView view = navigate("", DefaultView.class);
         SerializationDebugUtil.assertSerializable(ui);
         SerializationDebugUtil.assertSerializable(view);
+        assertNotNull(UI.getCurrent());
     }
 }
