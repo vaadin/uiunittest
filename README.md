@@ -78,6 +78,95 @@ public class BasicTest extends UIUnitTest {
     }
 }
 ```
+### Testing shortcuts
+
+You can simulate keyboard shortcuts on the active view and verify the side effects without a browser. The `test(view).shortcut(...)` helper sends a shortcut event directly to the UI.
+
+For example, the `ShortcutView` reacts to Page Up / Page Down and updates a label:
+
+```java
+@Test
+public void shortcut_triggers_actions() {
+    TestUI ui = new TestUI();
+    mockVaadin(ui);
+    ShortcutView view = navigate(ShortcutView.NAME, ShortcutView.class);
+
+    // Simulate pressing Page Down
+    test(view).shortcut(KeyCode.PAGE_DOWN);
+    assertEquals("Next", $(Label.class).id("next").getValue());
+
+    // Simulate pressing Page Up
+    test(view).shortcut(KeyCode.PAGE_UP);
+    assertEquals("Previous", $(Label.class).id("previous").getValue());
+}
+```
+
+This pattern works for any global shortcut registered in your view.
+
+### Waiting push updates
+
+For push-enabled UIs you often need to wait until a background task has updated the UI. Use `waitWhile(component, condition, timeoutSeconds)` to block the test until the server-side update has completed.
+
+In `PushTestView` a button starts an async task, shows a spinner style on a label and finally updates its value:
+
+```java
+@Test
+public void wait_for_push_result() {
+    TestUI ui = new TestUI();
+    mockVaadin(ui);
+    navigate(PushTestView.NAME, PushTestView.class);
+
+    Label label = $(Label.class).id("push-label");
+    Button button = $(Button.class).id("spin-button");
+
+    test(button).click();
+    assertFalse(button.isEnabled());
+
+    // Wait until the push update has removed the spinner style
+    waitWhile(label,
+            l -> l.getStyleName().contains(ValoTheme.LABEL_SPINNER), 10);
+
+    assertEquals("Hello", label.getValue());
+    assertTrue(button.isEnabled());
+}
+```
+
+This allows you to deterministically test push flows without Thread.sleep or a real browser.
+
+### Testing Grid
+
+The Grid tester provides high-level helpers for selection, clicking cells, editing component columns, sorting, column visibility and editor operations. You still use normal component queries to access nested components inside cells.
+
+Below is a simplified example based on `GridTestView` and `GridEditorTestView`:
+
+```java
+@Test
+public void grid_selection_and_editing() {
+    TestUI ui = new TestUI();
+    mockVaadin(ui);
+    GridTestView view = navigate(GridTestView.NAME, GridTestView.class);
+
+    Grid<GridTestView.Bean> grid = $(Grid.class).single();
+
+    // Change selection mode and select two rows
+    test($(RadioButtonGroup.class).caption("Mode").first())
+            .clickItem(SelectionMode.MULTI);
+    test(grid).clickToSelect(0);
+    test(grid).clickToSelect(1);
+    assertEquals(2, grid.getSelectedItems().size());
+
+    // Work with a component column (TextField + Button) in a cell
+    HorizontalLayout layout = (HorizontalLayout) test(grid).cell(1, 0);
+    test($(layout, TextField.class).single()).setValue("New value");
+    test($(layout, Button.class).single()).click();
+
+    // Sort and toggle column visibility
+    test(grid).toggleColumnSorting(0);        // uses Grid sort API
+    test(grid).toggleColumnVisibility("VALUE");
+}
+```
+
+For editor-enabled grids you can additionally use `test(grid).edit(row)`, `save()`, `cancel()` and `editorOpen()` as shown in `GridEditorTest`.
 
 ## Development instructions
 
