@@ -27,13 +27,12 @@ import com.vaadin.ui.TextField;
 public class BinderTest extends UIUnitTest {
 
     private TestUI ui;
-    private BinderTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(BinderTestView.NAME, BinderTestView.class);
+        navigate(BinderTestView.NAME, BinderTestView.class);
     }
 
     @After

@@ -23,13 +23,12 @@ import com.vaadin.ui.Label;
 public class PanelTest extends UIUnitTest {
 
     private TestUI ui;
-    private PanelTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(PanelTestView.NAME, PanelTestView.class);
+        navigate(PanelTestView.NAME, PanelTestView.class);
     }
 
     @After

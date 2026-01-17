@@ -29,13 +29,12 @@ import com.vaadin.ui.TextField;
 public class GridEditorTest extends UIUnitTest {
 
     private TestUI ui;
-    private GridEditorTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(GridEditorTestView.NAME, GridEditorTestView.class);
+        navigate(GridEditorTestView.NAME, GridEditorTestView.class);
     }
 
     @After

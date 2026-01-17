@@ -43,7 +43,7 @@ public class GridTestView extends TestView {
                 .collect(Collectors.toList());
 
         Grid<Bean> grid = new Grid<>();
-        grid.addColumn(item -> item.getId()).setCaption("ID").setSortable(true)
+        grid.addColumn(Bean::getId).setCaption("ID").setSortable(true)
                 .setComparator((a, b) -> a.getId() - b.getId());
         grid.addComponentColumn(item -> {
             HorizontalLayout layout = new HorizontalLayout();

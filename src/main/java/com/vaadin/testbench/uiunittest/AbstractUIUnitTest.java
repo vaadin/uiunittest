@@ -176,15 +176,15 @@ public abstract class AbstractUIUnitTest {
             if (grid.getEditor().getBinder() != null) {
                 List<T> fields = (List<T>) grid.getEditor().getBinder()
                         .getFields()
-                        .filter(field -> field.getClass()
-                                .isAssignableFrom(clazz))
+                        .filter(field -> clazz
+                                .isAssignableFrom(field.getClass()))
                         .collect(Collectors.toList());
                 result.addAll(fields);
             }
         }
         while (iter.hasNext()) {
             Component component = iter.next();
-            if (component.getClass().equals(clazz)) {
+            if (clazz.isAssignableFrom(component.getClass())) {
                 result.add((T) component);
             }
             if (component instanceof HasComponents) {

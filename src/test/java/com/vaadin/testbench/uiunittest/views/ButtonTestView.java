@@ -1,8 +1,5 @@
 package com.vaadin.testbench.uiunittest.views;
 
-import java.lang.reflect.Modifier;
-import java.security.Key;
-
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.testbench.uiunittest.TestView;

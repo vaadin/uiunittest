@@ -23,8 +23,7 @@ public class PushTestView extends TestView {
     public static final String NAME = "push";
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
-    private CompletableFuture<Void> future;
-
+    
     @Override
     public String getName() {
         return NAME;
@@ -41,7 +40,7 @@ public class PushTestView extends TestView {
         button.setDisableOnClick(true);
         button.addClickListener(e -> {
             label.addStyleName(ValoTheme.LABEL_SPINNER);
-            future = getStringWithDelay().thenAccept(text -> {
+            getStringWithDelay().thenAccept(text -> {
                 getUI().access(() -> {
                     label.removeStyleName(ValoTheme.LABEL_SPINNER);
                     label.setValue(text);

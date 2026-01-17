@@ -28,13 +28,12 @@ import com.vaadin.ui.themes.ValoTheme;
 public class PushTest extends UIUnitTest {
 
     private TestUI ui;
-    private PushTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(PushTestView.NAME, PushTestView.class);
+        navigate(PushTestView.NAME, PushTestView.class);
     }
 
     @After

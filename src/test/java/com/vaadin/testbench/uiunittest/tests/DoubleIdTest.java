@@ -14,13 +14,12 @@ import com.vaadin.testbench.uiunittest.views.DoubleIdView;
 public class DoubleIdTest extends UIUnitTest {
 
     private TestUI ui;
-    private DoubleIdView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(DoubleIdView.NAME, DoubleIdView.class);
+        navigate(DoubleIdView.NAME, DoubleIdView.class);
     }
 
     @After

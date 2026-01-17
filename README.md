@@ -12,7 +12,7 @@ First you need to add dependency to the library in your project. Use test scope 
 <dependency>
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-testbench</artifactId>
-    <version>5.0.0</version>
+    <version>5.4.1</version>
     <scope>test</scope>
 </dependency>
 ```

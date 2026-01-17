@@ -27,6 +27,7 @@ import com.vaadin.testbench.uiunittest.views.CheckBoxGroupTestView;
 import com.vaadin.testbench.uiunittest.views.ComboBoxTestView;
 import com.vaadin.testbench.uiunittest.views.DateFieldTestView;
 import com.vaadin.testbench.uiunittest.views.DoubleIdView;
+import com.vaadin.testbench.uiunittest.views.ExtendedComponentView;
 import com.vaadin.testbench.uiunittest.views.FocusTestView;
 import com.vaadin.testbench.uiunittest.views.GridEditorTestView;
 import com.vaadin.testbench.uiunittest.views.GridTestView;
@@ -71,6 +72,7 @@ public class TestUI extends UI {
         addView(WindowView.NAME, WindowView.class);
         addView(BeanValidationView.NAME, BeanValidationView.class);
         addView(ShortcutView.NAME, ShortcutView.class);
+        addView(ExtendedComponentView.NAME, ExtendedComponentView.class);
         setContent(content);
         nav.navigateTo("");
     }

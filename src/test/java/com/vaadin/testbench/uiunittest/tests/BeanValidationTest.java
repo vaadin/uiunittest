@@ -19,13 +19,12 @@ import com.vaadin.ui.TextField;
 public class BeanValidationTest extends UIUnitTest {
 
     private TestUI ui;
-    private BeanValidationView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(BeanValidationView.NAME, BeanValidationView.class);
+        navigate(BeanValidationView.NAME, BeanValidationView.class);
     }
 
     @After

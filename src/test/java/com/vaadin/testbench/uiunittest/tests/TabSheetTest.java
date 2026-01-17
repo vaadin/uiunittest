@@ -27,13 +27,12 @@ import com.vaadin.ui.VerticalLayout;
 public class TabSheetTest extends UIUnitTest {
 
     private TestUI ui;
-    private TabSheetTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(TabSheetTestView.NAME, TabSheetTestView.class);
+        navigate(TabSheetTestView.NAME, TabSheetTestView.class);
     }
 
     @After

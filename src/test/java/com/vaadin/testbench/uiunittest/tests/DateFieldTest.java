@@ -29,13 +29,12 @@ import com.vaadin.ui.Notification;
 public class DateFieldTest extends UIUnitTest {
 
     private TestUI ui;
-    private DateFieldTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(DateFieldTestView.NAME, DateFieldTestView.class);
+        navigate(DateFieldTestView.NAME, DateFieldTestView.class);
     }
 
     @After

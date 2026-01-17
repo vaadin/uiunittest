@@ -25,14 +25,12 @@ import com.vaadin.ui.Notification;
 public class CheckBoxGroupTest extends UIUnitTest {
 
     private TestUI ui;
-    private CheckBoxGroupTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(CheckBoxGroupTestView.NAME,
-                CheckBoxGroupTestView.class);
+        navigate(CheckBoxGroupTestView.NAME, CheckBoxGroupTestView.class);
     }
 
     @After

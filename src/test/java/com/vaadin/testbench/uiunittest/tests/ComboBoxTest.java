@@ -25,13 +25,12 @@ import com.vaadin.ui.Notification;
 public class ComboBoxTest extends UIUnitTest {
 
     private TestUI ui;
-    private ComboBoxTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(ComboBoxTestView.NAME, ComboBoxTestView.class);
+        navigate(ComboBoxTestView.NAME, ComboBoxTestView.class);
     }
 
     @After

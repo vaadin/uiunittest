@@ -25,13 +25,12 @@ import com.vaadin.ui.Notification;
 public class MenuBarTest extends UIUnitTest {
 
     private TestUI ui;
-    private MenuBarTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(MenuBarTestView.NAME, MenuBarTestView.class);
+        navigate(MenuBarTestView.NAME, MenuBarTestView.class);
     }
 
     @After

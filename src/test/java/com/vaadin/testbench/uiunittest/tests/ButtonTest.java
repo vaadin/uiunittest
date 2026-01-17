@@ -19,13 +19,12 @@ import com.vaadin.ui.Notification;
 public class ButtonTest extends UIUnitTest {
 
     private TestUI ui;
-    private ButtonTestView view;
 
     @Before
     public void setup() throws ServiceException {
         ui = new TestUI();
         mockVaadin(ui);
-        view = navigate(ButtonTestView.NAME, ButtonTestView.class);
+        navigate(ButtonTestView.NAME, ButtonTestView.class);
     }
 
     @After
