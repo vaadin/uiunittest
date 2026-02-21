@@ -276,4 +276,32 @@ public class GridTest extends UIUnitTest {
                     "- root.bean (com.vaadin.testbench.uiunittest.views.GridTestView$Bean)"));
         }
     }
+
+    @Test
+    public void gridDetailsRow() {
+        @SuppressWarnings("unchecked")
+        Grid<Bean> grid = $(Grid.class).single();
+
+        Bean item = test(grid).item(0);
+        test(grid).click(0, 0);
+
+        assertTrue(grid.isDetailsVisible(item));
+        Label details = (Label) test(grid).details(0);
+        assertEquals("Details for 0: Value 0", details.getValue());
+        assertTrue(details.isAttached());
+
+        test(grid).click(0, 0);
+        assertFalse(grid.isDetailsVisible(item));
+
+        int err = 0;
+        try {
+            test(grid).details(0);
+        } catch (AssertionError e) {
+            // Expected, details should not be available when closed
+            err++;
+        }
+
+        assertEquals(1, err);
+    }
+
 }

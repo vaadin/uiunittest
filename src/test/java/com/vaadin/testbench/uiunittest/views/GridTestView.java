@@ -109,6 +109,17 @@ public class GridTestView extends TestView {
 
         grid.addItemClickListener(e -> {
             clicked.setValue(e.getItem().getValue());
+            if (grid.isDetailsVisible(e.getItem())) {
+                grid.setDetailsVisible(e.getItem(), false);
+            } else {
+                grid.setDetailsVisible(e.getItem(), true);
+            }
+        });
+
+        grid.setDetailsGenerator(item -> {
+            Label label = new Label(
+                    "Details for " + item.getId() + ": " + item.getValue());
+            return label;
         });
 
         content.addComponents(grid, group, button, clicked);

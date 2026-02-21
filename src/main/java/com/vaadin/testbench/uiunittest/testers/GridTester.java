@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +41,9 @@ import com.vaadin.ui.components.grid.MultiSelectionModel;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import com.vaadin.ui.components.grid.SingleSelectionModelImpl;
+
+import elemental.json.Json;
+import elemental.json.JsonObject;
 
 @SuppressWarnings({ "java:S4274", "java:S3011" })
 public class GridTester<T> extends Tester<Grid<T>> {
@@ -465,6 +469,70 @@ public class GridTester<T> extends Tester<Grid<T>> {
                 | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Retrieves the details component for the given row. Asserts that details
+     * generator is set and the row is visible.
+     *
+     * @param row
+     *            The row index, base 0
+     * @return Details component
+     */
+    public Component details(int row) {
+        assert (row > -1 && row < size()) : ROW_OUT_OF_BOUNDS;
+
+        Grid<T> grid = getComponent();
+        T item = item(row);
+        assert grid.isDetailsVisible(item) : "Details are not visible for row "
+                + row;
+
+        try {
+            Field detailsManagerField = Grid.class
+                    .getDeclaredField("detailsManager");
+            detailsManagerField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Grid.DetailsManager<T> detailsManager = (Grid.DetailsManager<T>) detailsManagerField
+                    .get(grid);
+
+            assert detailsManager != null : "Details manager is not available";
+
+            Field generatorField = detailsManager.getClass()
+                    .getDeclaredField("generator");
+            generatorField.setAccessible(true);
+            Object generator = generatorField.get(detailsManager);
+            assert generator != null : "No details generator set";
+
+            JsonObject dummy = Json.createObject();
+            detailsManager.generateData(item, dummy);
+
+            Field componentsField = detailsManager.getClass()
+                    .getDeclaredField("components");
+            componentsField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<T, Component> components = (Map<T, Component>) componentsField
+                    .get(detailsManager);
+
+            Component details = components != null ? components.get(item)
+                    : null;
+            if (details == null && components != null) {
+                for (Map.Entry<T, Component> entry : components.entrySet()) {
+                    if (Objects.equals(entry.getKey(), item)) {
+                        details = entry.getValue();
+                        break;
+                    }
+                }
+            }
+
+            assert details != null : "Details component is not available for row "
+                    + row;
+            return details;
+        } catch (NoSuchFieldException | SecurityException
+                | IllegalArgumentException | IllegalAccessException e) {
+            throw new AssertionError(
+                    "Failed to access Grid details internals via reflection",
+                    e);
         }
     }
 
