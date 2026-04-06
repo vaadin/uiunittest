@@ -42,7 +42,7 @@ public class PushTest extends UIUnitTest {
     }
 
     @Test
-    public void waitForPush() {
+    public void waitWhileForPush_withTimeout() {
         assertEquals(PushMode.AUTOMATIC,
                 ui.getPushConfiguration().getPushMode());
         Label label = $(Label.class).id("push-label");
@@ -50,10 +50,55 @@ public class PushTest extends UIUnitTest {
         Button button = $(Button.class).id("spin-button");
         test(button).click();
         assertFalse(button.isEnabled());
-        waitWhile(label,
-                l -> l.getStyleName().contains(ValoTheme.LABEL_SPINNER), 10);
+        waitWhile(()-> label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
         assertEquals("Hello", label.getValue());
         assertTrue(button.isEnabled());
         assertFalse(label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
     }
+
+    @Test
+    public void waitWhileForPush_withoutTimeout() {
+        assertEquals(PushMode.AUTOMATIC,
+                ui.getPushConfiguration().getPushMode());
+        Label label = $(Label.class).id("push-label");
+        assertEquals("", label.getValue());
+        Button button = $(Button.class).id("spin-button");
+        test(button).click();
+        assertFalse(button.isEnabled());
+        waitWhile(()-> label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
+        assertEquals("Hello", label.getValue());
+        assertTrue(button.isEnabled());
+        assertFalse(label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
+    }
+
+    @Test
+    public void waitUntilForPush_withTimeout() {
+        assertEquals(PushMode.AUTOMATIC,
+                ui.getPushConfiguration().getPushMode());
+        Label label = $(Label.class).id("push-label");
+        assertEquals("", label.getValue());
+        Button button = $(Button.class).id("spin-button");
+        test(button).click();
+        assertFalse(button.isEnabled());
+        waitUntil(()-> !label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
+        assertEquals("Hello", label.getValue());
+        assertTrue(button.isEnabled());
+        assertFalse(label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
+    }
+
+    @Test
+    public void waitUntilForPush_withoutTimeout() {
+        assertEquals(PushMode.AUTOMATIC,
+                ui.getPushConfiguration().getPushMode());
+        Label label = $(Label.class).id("push-label");
+        assertEquals("", label.getValue());
+        Button button = $(Button.class).id("spin-button");
+        test(button).click();
+        assertFalse(button.isEnabled());
+        waitUntil(()-> !label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
+        assertEquals("Hello", label.getValue());
+        assertTrue(button.isEnabled());
+        assertFalse(label.getStyleName().contains(ValoTheme.LABEL_SPINNER));
+    }
+
 }

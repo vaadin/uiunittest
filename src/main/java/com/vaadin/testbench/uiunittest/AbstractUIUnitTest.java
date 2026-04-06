@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -353,7 +354,12 @@ public abstract class AbstractUIUnitTest {
      *            Boolean predicate, can be lambda expression
      * @param timeout
      *            Wait maximum seconds
+     *
+     * @deprecated since 5.6, use {@link #waitWhile(BooleanSupplier, int)} instead and
+     *             capture necessary variables in the lambda expression. This
+     *             method is unnecessarily complex.
      */
+    @Deprecated(since = "5.6", forRemoval = true)
     public <T> void waitWhile(T param, Predicate<T> condition, int timeout) {
         assert (param != null);
         assert (condition != null);
@@ -373,6 +379,121 @@ public abstract class AbstractUIUnitTest {
         } finally {
             VaadinSession.getCurrent().lock();
         }
+    }
+
+    /**
+     * Utility method that waits while condition is true. Unlocks the mocked
+     * session and returns lock after wait ends. This is useful when waiting
+     * background thread activity to complete and letting ui.access to happen.
+     *
+     * @see UI#access(Runnable)
+     * @see #waitWhile(BooleanSupplier, int)
+     * @see #waitUntil(BooleanSupplier, int)
+     * @see #waitUntil(BooleanSupplier)
+     *
+     * @param condition
+     *            Boolean condition, can be a lambda expression
+     */
+    public void waitWhile(BooleanSupplier condition) {
+        waitWhile(condition, 10);
+    }
+
+    /**
+     * Utility method that waits while condition is true. Unlocks the mocked
+     * session and returns lock after wait ends. This is useful when waiting
+     * background thread activity to complete and letting ui.access to happen.
+     *
+     * @see UI#access(Runnable)
+     * @see #waitWhile(BooleanSupplier)
+     * @see #waitUntil(BooleanSupplier, int)
+     * @see #waitUntil(BooleanSupplier)
+     *
+     * @param condition
+     *            Boolean condition, can be a lambda expression
+     * @param timeout
+     *            Wait maximum seconds
+     */
+    public void waitWhile(BooleanSupplier condition, int timeout) {
+        assert (condition != null);
+        assert (VaadinSession.getCurrent().hasLock());
+        timeout = timeout * 10;
+        VaadinSession.getCurrent().unlock();
+        try {
+            int i = 0;
+            do {
+                try {
+                    Thread.sleep(100);
+                    i++;
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+            } while (testWaitCondition(condition) && i < timeout);
+        } finally {
+            VaadinSession.getCurrent().lock();
+        }
+    }
+
+    /**
+     * Utility method that waits until condition is true. Unlocks the mocked
+     * session and returns lock after wait ends. This is useful when waiting
+     * background thread activity to complete and letting ui.access to happen.
+     *
+     * @see UI#access(Runnable)
+     * @see #waitUntil(BooleanSupplier, int)
+     * @see #waitWhile(BooleanSupplier)
+     * @see #waitWhile(BooleanSupplier, int)
+     *
+     * @param condition
+     *            Boolean condition, can be a lambda expression
+     */
+    public void waitUntil(BooleanSupplier condition) {
+        waitUntil(condition, 10);
+    }
+
+    /**
+     * Utility method that waits until condition is true. Unlocks the mocked
+     * session and returns lock after wait ends. This is useful when waiting
+     * background thread activity to complete and letting ui.access to happen.
+     *
+     * @see UI#access(Runnable)
+     * @see #waitUntil(BooleanSupplier, int)
+     * @see #waitWhile(BooleanSupplier)
+     * @see #waitWhile(BooleanSupplier, int)
+     *
+     * @param condition
+     *            Boolean condition, can be a lambda expression
+     * @param timeout
+     *            Wait maximum seconds
+     */
+    public void waitUntil(BooleanSupplier condition, int timeout) {
+        assert (condition != null);
+        assert (VaadinSession.getCurrent().hasLock());
+        timeout = timeout * 10;
+        VaadinSession.getCurrent().unlock();
+        try {
+            int i = 0;
+            while (!testWaitCondition(condition) && i < timeout) {
+                try {
+                    Thread.sleep(100);
+                    i++;
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+            }
+        } finally {
+            VaadinSession.getCurrent().lock();
+        }
+    }
+
+    private boolean testWaitCondition(BooleanSupplier condition) {
+        boolean result;
+        VaadinSession.getCurrent().lock();
+        try {
+            result = condition.getAsBoolean();
+        } finally {
+            VaadinSession.getCurrent().unlock();
+        }
+        return result;
     }
 
     private <T> boolean testWaitCondition(T param, Predicate<T> condition) {
