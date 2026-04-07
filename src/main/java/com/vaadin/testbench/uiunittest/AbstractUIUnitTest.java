@@ -359,7 +359,7 @@ public abstract class AbstractUIUnitTest {
      *             capture necessary variables in the lambda expression. This
      *             method is unnecessarily complex.
      */
-    @Deprecated(since = "5.6", forRemoval = true)
+    @Deprecated
     public <T> void waitWhile(T param, Predicate<T> condition, int timeout) {
         assert (param != null);
         assert (condition != null);
