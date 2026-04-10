@@ -103,9 +103,37 @@ public void shortcut_triggers_actions() {
 
 This pattern works for any global shortcut registered in your view.
 
+### Testing focus
+
+You can test focus and blur behavior without a browser by using the tester helpers `focus()` and `isFocused()`.
+
+In `FocusTestView`, the first field is initially focused. Moving focus to the second field triggers a blur event for the first field and a focus event for the second field:
+
+```java
+@Test
+public void focus_switches_between_fields() {
+    TestUI ui = new TestUI();
+    mockVaadin(ui);
+    navigate(FocusTestView.NAME, FocusTestView.class);
+
+    TextField firstName = $(TextField.class).caption("First name").first();
+    TextField lastName = $(TextField.class).caption("Last name").first();
+
+    // Move focus to "Last name"
+    test(lastName).focus();
+
+    assertTrue(test(lastName).isFocused());
+    assertFalse(test(firstName).isFocused());
+    assertEquals("Last name focused", $(Label.class).id("focus1").getValue());
+    assertEquals("First name blurred", $(Label.class).id("blur1").getValue());
+}
+```
+
+Setting a value on many field testers also focuses the component first, so focus listeners and blur listeners are triggered with realistic side effects.
+
 ### Waiting push updates
 
-For push-enabled UIs you often need to wait until a background task has updated the UI. Use `waitWhile(component, condition, timeoutSeconds)` to block the test until the server-side update has completed.
+For push-enabled UIs you often need to wait until a background task has updated the UI. Use `waitWhile(condition, timeoutSeconds)` to block the test until the server-side update has completed.
 
 In `PushTestView` a button starts an async task, shows a spinner style on a label and finally updates its value:
 
@@ -123,8 +151,8 @@ public void wait_for_push_result() {
     assertFalse(button.isEnabled());
 
     // Wait until the push update has removed the spinner style
-    waitWhile(label,
-            l -> l.getStyleName().contains(ValoTheme.LABEL_SPINNER), 10);
+        waitWhile(() -> label.getStyleName().contains(ValoTheme.LABEL_SPINNER),
+            10);
 
     assertEquals("Hello", label.getValue());
     assertTrue(button.isEnabled());
@@ -167,6 +195,8 @@ public void grid_selection_and_editing() {
 ```
 
 For editor-enabled grids you can additionally use `test(grid).edit(row)`, `save()`, `cancel()` and `editorOpen()` as shown in `GridEditorTest`.
+
+
 
 ## Development instructions
 
