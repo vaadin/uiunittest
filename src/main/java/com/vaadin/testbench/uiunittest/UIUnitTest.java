@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vaadin.annotations.Push;
+import com.vaadin.server.Constants;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
@@ -21,6 +22,7 @@ import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.testbench.uiunittest.mocks.MockDeploymentConfiguration;
 import com.vaadin.testbench.uiunittest.mocks.MockHttpSession;
 import com.vaadin.testbench.uiunittest.mocks.MockServletContext;
 import com.vaadin.testbench.uiunittest.mocks.MockServletRequest;
@@ -129,12 +131,38 @@ public abstract class UIUnitTest extends AbstractUIUnitTest {
      */
     protected MockVaadinService getService() throws ServiceException {
         if (VaadinService.getCurrent() == null) {
-            MockVaadinService service = new MockVaadinService();
+            MockDeploymentConfiguration configuration =
+                    new MockDeploymentConfiguration();
+            boolean productionMode = resolveProductionMode();
+            configuration.setProductionMode(productionMode);
+            configuration.setInitParameter(
+                    Constants.SERVLET_PARAMETER_PRODUCTION_MODE,
+                    String.valueOf(productionMode));
+            MockVaadinService service = new MockVaadinService(configuration);
             VaadinService.setCurrent(service);
             return service;
 
         }
         return (MockVaadinService) VaadinService.getCurrent();
+    }
+
+    private boolean resolveProductionMode() {
+        DeploymentMode mode = getDeploymentMode();
+        if (mode == DeploymentMode.PRODUCTION) {
+            return true;
+        }
+        if (mode == DeploymentMode.DEBUG) {
+            return false;
+        }
+        String value = System.getProperty("vaadin.servlet.productionMode");
+        if (value == null) {
+            value = System.getProperty("vaadin.servlet.production-mode");
+        }
+        if (value == null) {
+            value = System
+                    .getProperty(Constants.SERVLET_PARAMETER_PRODUCTION_MODE);
+        }
+        return Boolean.parseBoolean(value);
     }
 
     /**
