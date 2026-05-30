@@ -17,6 +17,7 @@ import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
@@ -37,6 +38,9 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  */
 @SuppressWarnings("serial")
 public class MockServletContext implements ServletContext, Serializable {
+
+    private final Map<String, Object> attributes = new ConcurrentHashMap<>();
+    private final Map<String, String> initParameters = new ConcurrentHashMap<>();
 
     /*
      * (non-Javadoc)
@@ -207,7 +211,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public String getServerInfo() {
-        return null;
+        return "UIUnitTest MockServletContext";
     }
 
     /*
@@ -217,7 +221,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public String getInitParameter(String name) {
-        return null;
+        return initParameters.get(name);
     }
 
     /*
@@ -228,7 +232,7 @@ public class MockServletContext implements ServletContext, Serializable {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getInitParameterNames() {
-        return Collections.enumeration(Collections.emptyList());
+        return Collections.enumeration(initParameters.keySet());
     }
 
     /*
@@ -238,7 +242,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public Object getAttribute(String name) {
-        return null;
+        return attributes.get(name);
     }
 
     /*
@@ -249,7 +253,7 @@ public class MockServletContext implements ServletContext, Serializable {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Enumeration getAttributeNames() {
-        return null;
+        return Collections.enumeration(attributes.keySet());
     }
 
     /*
@@ -260,6 +264,11 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public void setAttribute(String name, Object object) {
+        if (object == null) {
+            removeAttribute(name);
+        } else {
+            attributes.put(name, object);
+        }
     }
 
     /*
@@ -269,6 +278,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public void removeAttribute(String name) {
+        attributes.remove(name);
     }
 
     /*
@@ -278,7 +288,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public String getServletContextName() {
-        return null;
+        return "UIUnitTest";
     }
 
     /*
@@ -288,7 +298,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public String getContextPath() {
-        return null;
+        return "";
     }
 
     /*
@@ -319,7 +329,7 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public boolean setInitParameter(String name, String value) {
-        return false;
+        return initParameters.putIfAbsent(name, value) == null;
     }
 
     /*
@@ -550,7 +560,9 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     @Override
     public ClassLoader getClassLoader() {
-        return null;
+        ClassLoader classLoader = Thread.currentThread()
+                .getContextClassLoader();
+        return classLoader != null ? classLoader : getClass().getClassLoader();
     }
 
     /*

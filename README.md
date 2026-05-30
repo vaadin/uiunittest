@@ -78,6 +78,107 @@ public class BasicTest extends UIUnitTest {
     }
 }
 ```
+
+### Spring Vaadin projects
+
+Spring based Vaadin 8 projects can extend `SpringUIUnitTest` to reuse the
+Spring/Vaadin test bootstrap. UIUnitTest declares Spring dependencies as
+optional and provided, so consuming projects must have Vaadin Spring and Spring
+Boot on their own test classpath, usually through the application's normal
+dependencies.
+
+If the application does not already expose them to tests, add the needed
+Spring libraries in test scope:
+
+```xml
+<dependency>
+    <groupId>com.vaadin</groupId>
+    <artifactId>vaadin-spring</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+For `SpringSecurityUIUnitTest`, also include Spring Security core in the test
+classpath.
+
+Create a small project-specific base class once:
+
+```java
+public abstract class AbstractSpringUITest extends SpringUIUnitTest {
+
+    @Override
+    protected Class<?>[] getConfigurationClasses() {
+        return new Class<?>[] { Application.class };
+    }
+
+    @Override
+    protected Class<? extends UI> getUiClass() {
+        return AppUI.class;
+    }
+}
+```
+
+Individual tests can then use the same component query, tester and navigation
+helpers:
+
+```java
+public class OrdersViewTest extends AbstractSpringUITest {
+
+    @Before
+    public void setup() throws ServiceException {
+        mockVaadin();
+    }
+
+    @After
+    public void cleanup() {
+        tearDown();
+    }
+
+    @Test
+    public void adminCanOpenOrders() {
+        OrdersView view = navigate(OrdersView.class);
+        assertNotNull(view);
+    }
+}
+```
+
+Projects using Spring Security can extend `SpringSecurityUIUnitTest` and keep
+application-specific roles in the downstream base class:
+
+```java
+public abstract class AbstractSecureUITest extends SpringSecurityUIUnitTest {
+
+    @Override
+    protected Class<?>[] getConfigurationClasses() {
+        return new Class<?>[] { Application.class };
+    }
+
+    @Override
+    protected Class<? extends UI> getUiClass() {
+        return AppUI.class;
+    }
+
+    @Override
+    protected void configureSecurityContext() {
+        authenticateAsAdmin();
+    }
+
+    protected void authenticateAsAdmin() {
+        authenticate("admin@vaadin.com", "ROLE_ADMIN");
+    }
+}
+```
+
+For Bakery-style migrations, keep helpers such as `authenticateAsAdmin()`,
+`authenticateAsBaker()` and `authenticateAsBarista()` in the application test
+base. UIUnitTest only provides the generic Spring bootstrap and
+`authenticate(username, authorities...)` helper.
+
 ### Testing shortcuts
 
 You can simulate keyboard shortcuts on the active view and verify the side effects without a browser. The `test(view).shortcut(...)` helper sends a shortcut event directly to the UI.

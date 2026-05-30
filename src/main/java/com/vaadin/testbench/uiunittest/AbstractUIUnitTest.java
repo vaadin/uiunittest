@@ -63,6 +63,27 @@ import com.vaadin.ui.Window;
 public abstract class AbstractUIUnitTest {
 
     /**
+     * Deployment mode for mocked Vaadin services.
+     */
+    protected enum DeploymentMode {
+        AUTO,
+        DEBUG,
+        PRODUCTION
+    }
+
+    /**
+     * Resolve deployment mode for test service setup.
+     * <p>
+     * Default is {@link DeploymentMode#DEBUG} to preserve historical behavior
+     * for non-Spring tests.
+     *
+     * @return deployment mode
+     */
+    protected DeploymentMode getDeploymentMode() {
+        return DeploymentMode.DEBUG;
+    }
+
+    /**
      * Create mocked Vaadin environment with blank UI without Atmosphere
      * support. This is enough for common use cases testing standalone server
      * side components. Session is locked. UI and VaadinSession thread locals

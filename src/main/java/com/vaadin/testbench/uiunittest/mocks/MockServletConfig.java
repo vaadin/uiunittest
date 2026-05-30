@@ -30,8 +30,17 @@ public class MockServletConfig implements ServletConfig, Serializable {
         this(new Properties());
     }
 
+    public MockServletConfig(ServletContext context) {
+        this(new Properties(), context);
+    }
+
     public MockServletConfig(Properties initParameters) {
+        this(initParameters, new MockServletContext());
+    }
+
+    public MockServletConfig(Properties initParameters, ServletContext context) {
         this.initParameters = initParameters;
+        this.context = context;
     }
 
     /*
