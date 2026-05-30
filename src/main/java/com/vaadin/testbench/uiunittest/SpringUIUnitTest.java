@@ -44,6 +44,10 @@ import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinServletResponse;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.spring.internal.DefaultViewCache;
+import com.vaadin.spring.internal.ViewCacheRetrievalStrategy;
+import com.vaadin.spring.internal.ViewScopeImpl;
+import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.spring.server.SpringUIProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
 import com.vaadin.spring.server.SpringVaadinServletService;
@@ -233,6 +237,9 @@ public abstract class SpringUIUnitTest extends AbstractUIUnitTest {
                 if (slashIndex >= 0) {
                     requestedState = viewAndParameters.substring(0, slashIndex);
                 }
+                if (hasSpringViewProviderMatch(viewAndParameters)) {
+                    return null;
+                }
                 return targetViewName.equals(requestedState) ? targetViewName
                         : null;
             }
@@ -242,10 +249,41 @@ public abstract class SpringUIUnitTest extends AbstractUIUnitTest {
                 if (!targetViewName.equals(requestedViewName)) {
                     return null;
                 }
-                return applicationContext.getAutowireCapableBeanFactory()
-                        .createBean(viewClass);
+                return createViewWithActiveViewScope(viewClass,
+                        requestedViewName);
             }
         });
+    }
+
+    private boolean hasSpringViewProviderMatch(String viewAndParameters) {
+        if (applicationContext == null) {
+            return false;
+        }
+        for (SpringViewProvider provider : applicationContext
+                .getBeansOfType(SpringViewProvider.class).values()) {
+            if (provider.getViewName(viewAndParameters) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private <T extends View> T createViewWithActiveViewScope(Class<T> viewClass,
+            String viewName) {
+        ViewCacheRetrievalStrategy originalStrategy = ViewScopeImpl
+                .getViewCacheRetrievalStrategy();
+        DefaultViewCache viewCache = new DefaultViewCache();
+        ViewScopeImpl.setViewCacheRetrievalStrategy(beanFactory -> viewCache);
+        String scopedViewName = viewName != null ? viewName : viewClass.getName();
+        try {
+            viewCache.creatingView(scopedViewName);
+            T view = applicationContext.getAutowireCapableBeanFactory()
+                    .createBean(viewClass);
+            viewCache.viewCreated(scopedViewName, view);
+            return view;
+        } finally {
+            ViewScopeImpl.setViewCacheRetrievalStrategy(originalStrategy);
+        }
     }
 
     /**

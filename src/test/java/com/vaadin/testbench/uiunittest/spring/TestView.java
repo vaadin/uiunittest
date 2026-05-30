@@ -24,12 +24,12 @@ public class TestView extends CustomComponent implements View {
     private final AutowiredTestButton button;
     private final Label message = new Label("initial");
 
-    public TestView(ApplicationScopedMockService service,
-            AutowiredTestButton button) {
-        this.presenter = new TestPresenter(service);
+    public TestView(TestPresenter presenter, AutowiredTestButton button) {
+        this.presenter = presenter;
         this.button = button;
         message.setId("spring-message");
-        button.addClickListener(event -> message.setValue(presenter.getMessage()));
+        button.addClickListener(
+                event -> message.setValue(presenter.getMessage()));
         setCompositionRoot(new VerticalLayout(message, button));
     }
 
