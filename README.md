@@ -12,7 +12,7 @@ First you need to add dependency to the library in your project. Use test scope 
 <dependency>
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-testbench</artifactId>
-    <version>5.4.1</version>
+    <version>5.7.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -86,22 +86,6 @@ Spring/Vaadin test bootstrap. UIUnitTest declares Spring dependencies as
 optional and provided, so consuming projects must have Vaadin Spring and Spring
 Boot on their own test classpath, usually through the application's normal
 dependencies.
-
-If the application does not already expose them to tests, add the needed
-Spring libraries in test scope:
-
-```xml
-<dependency>
-    <groupId>com.vaadin</groupId>
-    <artifactId>vaadin-spring</artifactId>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot</artifactId>
-    <scope>test</scope>
-</dependency>
-```
 
 For `SpringSecurityUIUnitTest`, also include Spring Security core in the test
 classpath.
@@ -297,7 +281,16 @@ public void grid_selection_and_editing() {
 
 For editor-enabled grids you can additionally use `test(grid).edit(row)`, `save()`, `cancel()` and `editorOpen()` as shown in `GridEditorTest`.
 
+### Running tests in production mode
 
+When using Vaadin 8 extended maintenance releases and an offline server key for the license checking, the tests need to run in the production mode, add the following override in to your test base class extending UIUnitTest class (or its Spring variants) to do that.
+
+```java
+    @Override
+    public DeploymentMode getDeploymentMode() {
+        return DeploymentMode.PRODUCTION;
+    }
+```
 
 ## Development instructions
 
